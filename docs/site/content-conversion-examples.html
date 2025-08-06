@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Conversion Examples - MediaWiki Migration Tools</title>
+    <style>
+        :root {
+            --primary-color: #1890ff;
+            --primary-color-hover: #40a9ff;
+            --body-bg: #f0f2f5;
+            --component-bg: #ffffff;
+            --text-color: rgba(0, 0, 0, 0.85);
+            --text-color-secondary: rgba(0, 0, 0, 0.45);
+            --border-color: #d9d9d9;
+            --header-bg: #001529;
+            --menu-bg: #ffffff;
+            --code-bg: #fafafa;
+            --code-text-color: #333;
+            --pre-bg: #f5f5f5;
+        }
+        body.dark {
+            --primary-color: #177ddc;
+            --primary-color-hover: #095cb5;
+            --body-bg: #001529;
+            --component-bg: #001f3d;
+            --text-color: rgba(255, 255, 255, 0.85);
+            --text-color-secondary: rgba(255, 255, 255, 0.45);
+            --border-color: #303030;
+            --header-bg: #000c17;
+            --menu-bg: #001529;
+            --code-bg: #0d1117;
+            --code-text-color: #c9d1d9;
+            --pre-bg: #0d1117;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+            margin: 0;
+            background-color: var(--body-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+        }
+        .sidebar {
+            width: 280px;
+            background-color: var(--menu-bg);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .sidebar-header {
+            padding: 16px;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar-header a {
+            text-decoration: none;
+            color: inherit;
+        }
+        .sidebar-menu {
+            list-style: none;
+            padding: 8px;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        .sidebar-menu li a {
+            display: block;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-color-secondary);
+            border-radius: 6px;
+            margin-bottom: 4px;
+            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .sidebar-menu li a:hover {
+            background-color: var(--primary-color-hover);
+            color: white;
+        }
+        .sidebar-menu li a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .main-content {
+            margin-left: 280px;
+            padding: 24px;
+            width: calc(100% - 280px);
+        }
+        .theme-switch {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+        }
+        .ant-switch {
+            min-width: 44px;
+            height: 22px;
+            background: #000;
+            border-radius: 100px;
+            border: 1px solid #303030;
+            position: relative;
+            cursor: pointer;
+        }
+        .ant-switch-handle {
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            width: 18px;
+            height: 18px;
+            border-radius: 9px;
+            background-color: #fff;
+            transition: all 0.2s ease-in-out;
+        }
+        .ant-switch-inner {
+            color: #fff;
+            font-size: 12px;
+            position: absolute;
+            top: 0;
+            left: 24px;
+        }
+        .ant-switch.dark .ant-switch-handle {
+            left: 23px;
+        }
+        .ant-switch.dark .ant-switch-inner {
+            left: 6px;
+        }
+        .example-section {
+            display: none;
+        }
+        .example-section.active {
+            display: block;
+        }
+        .ant-card {
+            background: var(--component-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 24px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .ant-card-head {
+            padding: 16px 24px;
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .ant-card-body {
+            padding: 24px;
+        }
+        .code-comparison {
+            display: flex;
+            gap: 16px;
+        }
+        .code-block {
+            flex: 1;
+        }
+        .code-block h3 {
+            margin-top: 0;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        pre {
+            background-color: var(--pre-bg) !important;
+            color: var(--code-text-color) !important;
+            padding: 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            font-size: 14px;
+        }
+        code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            background-color: var(--code-bg);
+            color: var(--code-text-color);
+            padding: .2em .4em;
+            margin: 0;
+            font-size: 85%;
+            border-radius: 3px;
+        }
+        .ant-alert {
+            padding: 16px;
+            border-radius: 6px;
+            margin-top: 16px;
+        }
+        .ant-alert-info {
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+        }
+        body.dark .ant-alert-info {
+            background-color: #112a45;
+            border: 1px solid #173d69;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html">📘 Conversion Examples</a>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="#basic-formatting" class="active" onclick="showExample('basic-formatting', event)">Basic Formatting</a></li>
+            <li><a href="#lists" onclick="showExample('lists', event)">Lists</a></li>
+            <li><a href="#tables" onclick="showExample('tables', event)">Tables</a></li>
+            <li><a href="#code-blocks" onclick="showExample('code-blocks', event)">Code Blocks</a></li>
+            <li><a href="#images" onclick="showExample('images', event)">Images and Attachments</a></li>
+            <li><a href="#admonitions" onclick="showExample('admonitions', event)">Admonitions (Note/Warning)</a></li>
+            <li><a href="#links" onclick="showExample('links', event)">Links</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="theme-switch">
+            <div class="ant-switch" onclick="toggleTheme()">
+                <div class="ant-switch-handle"></div>
+                <span class="ant-switch-inner">🌙</span>
+            </div>
+        </div>
+
+        <div id="basic-formatting" class="example-section active">
+            <div class="ant-card">
+                <div class="ant-card-head">Basic Formatting</div>
+                <div class="ant-card-body">
+                    <p>Demonstrates conversion of bold, italic, and strikethrough text.</p>
+                    <div class="code-comparison">
+                        <div class="code-block">
+                            <h3>From: Azure DevOps Markdown</h3>
+                            <pre><code>**This is bold text**
+*This is italic text*
+~~This is strikethrough text~~
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <h3>To: MediaWiki Wikitext</h3>
+                            <pre><code>'''This is bold text'''
+''This is italic text''
+&lt;s&gt;This is strikethrough text&lt;/s&gt;
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="lists" class="example-section">
+            <div class="ant-card">
+                <div class="ant-card-head">Lists</div>
+                <div class="ant-card-body">
+                    <p>Shows how ordered and unordered lists are converted.</p>
+                    <div class="code-comparison">
+                        <div class="code-block">
+                            <h3>From: Azure DevOps Markdown</h3>
+                            <pre><code>1. First ordered item
+2. Second ordered item
+    - Unordered sub-item.
+3. Third ordered item
+
+- Unordered item
+- Another unordered item
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <h3>To: MediaWiki Wikitext</h3>
+                            <pre><code># First ordered item
+# Second ordered item
+#* Unordered sub-item.
+# Third ordered item
+
+* Unordered item
+* Another unordered item
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tables" class="example-section">
+            <div class="ant-card">
+                <div class="ant-card-head">Tables</div>
+                <div class="ant-card-body">
+                    <p>Complex table with headers and alignment.</p>
+                    <div class="code-comparison">
+                        <div class="code-block">
+                            <h3>From: Azure DevOps Markdown</h3>
+                            <pre><code>| Option | Description |
+| :--- | :--- |
+| data | path to data files to supply the data that will be passed into templates. |
+| engine | engine to be used for processing templates. Handlebars is the default. |
+| ext | extension to be used for dest files. |
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <h3>To: MediaWiki Wikitext</h3>
+                            <pre><code>{| class="wikitable"
+! Option
+! Description
+|-
+| data
+| path to data files to supply the data that will be passed into templates.
+|-
+| engine
+| engine to be used for processing templates. Handlebars is the default.
+|-
+| ext
+| extension to be used for dest files.
+|}
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="code-blocks" class="example-section">
+            <div class="ant-card">
+                <div class="ant-card-head">Code Blocks</div>
+                <div class="ant-card-body">
+                    <p>Conversion of fenced code blocks with language identifiers.</p>
+                    <div class="code-comparison">
+                        <div class="code-block">
+                            <h3>From: Azure DevOps Markdown</h3>
+                            <pre><code>```json
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "age": 25
+}
+```
+
+```python
+def hello_world():
+    print("Hello, world!")
+```
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <h3>To: MediaWiki Wikitext</h3>
+                            <pre><code>&lt;syntaxhighlight lang="json"&gt;
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "age": 25
+}
+&lt;/syntaxhighlight&gt;
+
+&lt;syntaxhighlight lang="python"&gt;
+def hello_world():
+    print("Hello, world!")
+&lt;/syntaxhighlight&gt;
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="images" class="example-section">
+            <div class="ant-card">
+                <div class="ant-card-head">Images and Attachments</div>
+                <div class="ant-card-body">
+                    <p>How embedded images and file attachments are handled.</p>
+                    <div class="code-comparison">
+                        <div class="code-block">
+                            <h3>From: Azure DevOps Markdown</h3>
+                            <pre><code>![An image](.attachments/image-20210312144945-1.png)
+
+[A document](.attachments/document.pdf)
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <h3>To: MediaWiki Wikitext</h3>
+                            <pre><code>[[File:image-20210312144945-1.png|An image]]
+
+[[Media:document.pdf|A document]]
+</code></pre>
+                        </div>
+                    </div>
+                    <div class="ant-alert ant-alert-info">
+                        The migrator automatically uploads files from the <code>.attachments</code> folder to the MediaWiki server.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="admonitions" class="example-section">
+            <div class="ant-card">
+                <div class="ant-card-head">Admonitions (Note/Warning)</div>
+                <div class="ant-card-body">
+                    <p>Conversion of Azure DevOps admonition blocks to MediaWiki templates.</p>
+                    <div class="code-comparison">
+                        <div class="code-block">
+                            <h3>From: Azure DevOps Markdown</h3>
+                            <pre><code>> [!NOTE]
+> This is a note.
+
+> [!WARNING]
+> This is a warning.
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <h3>To: MediaWiki Wikitext</h3>
+                            <pre><code>{{Note|This is a note.}}
+
+{{Warning|This is a warning.}}
+</code></pre>
+                        </div>
+                    </div>
+                     <div class="ant-alert ant-alert-info">
+                        This requires the 'Note' and 'Warning' templates to be present in your MediaWiki instance.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="links" class="example-section">
+            <div class="ant-card">
+                <div class="ant-card-head">Links</div>
+                <div class="ant-card-body">
+                    <p>Conversion of internal and external links.</p>
+                    <div class="code-comparison">
+                        <div class="code-block">
+                            <h3>From: Azure DevOps Markdown</h3>
+                            <pre><code>[Link to another page](./Another-Page.md)
+
+[External link](https://www.microsoft.com)
+</code></pre>
+                        </div>
+                        <div class="code-block">
+                            <h3>To: MediaWiki Wikitext</h3>
+                            <pre><code>[[Another-Page|Link to another page]]
+
+[https://www.microsoft.com External link]
+</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function showExample(exampleId, event) {
+            event.preventDefault();
+
+            // Hide all sections
+            document.querySelectorAll('.example-section').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(exampleId).classList.add('active');
+
+            // Update active link in sidebar
+            document.querySelectorAll('.sidebar-menu li a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function toggleTheme() {
+            const body = document.body;
+            const switcher = document.querySelector('.ant-switch');
+            const switcherInner = document.querySelector('.ant-switch-inner');
+
+            body.classList.toggle('dark');
+            switcher.classList.toggle('dark');
+
+            if (body.classList.contains('dark')) {
+                switcherInner.textContent = '☀️';
+            } else {
+                switcherInner.textContent = '🌙';
+            }
+        }
+    </script>
+</body>
+</html>
