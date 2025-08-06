@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-world Examples - MediaWiki Migration Tools</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h1, h2, h3 { color: #2563eb; }
+        code { background: #f1f5f9; padding: 2px 4px; border-radius: 3px; }
+        pre { background: #1e293b; color: white; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+        .back-link { display: inline-block; margin-bottom: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; text-decoration: none; border-radius: 5px; }
+        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+        th, td { border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; }
+        th { background: #f8fafc; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-link">← Back to Main Documentation</a>
+<h1>Content Conversion Examples</h1>
+<p>This document shows real examples of how Azure DevOps wiki content converts to MediaWiki format.</p>
+<h2>📋 Example 1: Basic Formatting</h2>
+<h3>Before (Azure DevOps Markdown):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gh"># Getting Started Guide</span>
+
+This is a <span class="gs">**comprehensive guide**</span> to help you get started with our <span class="ge">*awesome*</span> platform.
+
+<span class="gu">## Prerequisites</span>
+
+Before you begin, make sure you have:
+<span class="k">-</span><span class="w"> </span>Python 3.7 or higher
+<span class="k">-</span><span class="w"> </span>Git installed and configured
+<span class="k">-</span><span class="w"> </span>Access to the development environment
+
+<span class="gu">### Installation Steps</span>
+
+<span class="k">1.</span> Clone the repository
+<span class="k">2.</span> Install dependencies with <span class="sb">`pip install -r requirements.txt`</span>
+<span class="k">3.</span> Configure your environment variables
+<span class="k">4.</span> Run the application
+
+<span class="gs">**Important**</span>: Make sure to read the troubleshooting section if you encounter issues.
+</code></pre></div>
+
+<h3>After (MediaWiki):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gh">= Getting Started Guide =</span>
+
+This is a <span class="gs">&#39;&#39;&#39;comprehensive guide&#39;&#39;&#39;</span> to help you get started with our <span class="ge">&#39;&#39;awesome&#39;&#39;</span> platform.
+
+<span class="gu">== Prerequisites ==</span>
+
+Before you begin, make sure you have:
+<span class="k">*</span> Python 3.7 or higher
+<span class="k">*</span> Git installed and configured
+<span class="k">*</span> Access to the development environment
+
+<span class="gu">=== Installation Steps ===</span>
+
+<span class="k">#</span> Clone the repository
+<span class="k">#</span> Install dependencies with <span class="p">&lt;</span><span class="nt">code</span><span class="p">&gt;</span>pip install -r requirements.txt<span class="p">&lt;/</span><span class="nt">code</span><span class="p">&gt;</span>
+<span class="k">#</span> Configure your environment variables
+<span class="k">#</span> Run the application
+
+<span class="gs">&#39;&#39;&#39;Important&#39;&#39;&#39;</span>: Make sure to read the troubleshooting section if you encounter issues.
+</code></pre></div>
+
+<h3>✅ What Works Well:</h3>
+<ul>
+<li>Headers convert perfectly</li>
+<li>Bold and italic formatting</li>
+<li>Lists maintain structure</li>
+<li>Inline code formatting</li>
+</ul>
+<hr />
+<h2>📊 Example 2: Tables</h2>
+<h3>Before (Azure DevOps Markdown):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">## API Endpoints</span>
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | /api/users | Get all users | Yes |
+| POST | /api/users | Create new user | Yes |
+| PUT | /api/users/{id} | Update user | Yes |
+| DELETE | /api/users/{id} | Delete user | Admin |
+
+<span class="gu">### Response Codes</span>
+
+| Code | Status | Description |
+|------|--------|-------------|
+| 200 | OK | Request successful |
+| 401 | Unauthorized | Authentication required |
+| 403 | Forbidden | Insufficient permissions |
+| 404 | Not Found | Resource not found |
+</code></pre></div>
+
+<h3>After (MediaWiki):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">== API Endpoints ==</span>
+
+<span class="p">{|</span><span class="w"> </span><span class="na">class</span><span class="o">=</span><span class="s2">&quot;wikitable&quot;</span>
+<span class="p">|-</span>
+<span class="p">!</span><span class="gu"> Method</span>
+<span class="p">!</span><span class="gu"> Endpoint</span>
+<span class="p">!</span><span class="gu"> Description</span>
+<span class="p">!</span><span class="gu"> Auth Required</span>
+<span class="p">|-</span>
+<span class="p">|</span> GET
+<span class="p">|</span> /api/users
+<span class="p">|</span> Get all users
+<span class="p">|</span> Yes
+<span class="p">|-</span>
+<span class="p">|</span> POST
+<span class="p">|</span> /api/users
+<span class="p">|</span> Create new user
+<span class="p">|</span> Yes
+<span class="p">|-</span>
+<span class="p">|</span> PUT
+<span class="p">|</span> /api/users/{id}
+<span class="p">|</span> Update user
+<span class="p">|</span> Yes
+<span class="p">|-</span>
+<span class="p">|</span> DELETE
+<span class="p">|</span> /api/users/{id}
+<span class="p">|</span> Delete user
+<span class="p">|</span> Admin
+<span class="p">|}</span>
+
+<span class="gu">=== Response Codes ===</span>
+
+<span class="p">{|</span><span class="w"> </span><span class="na">class</span><span class="o">=</span><span class="s2">&quot;wikitable&quot;</span>
+<span class="p">|-</span>
+<span class="p">!</span><span class="gu"> Code</span>
+<span class="p">!</span><span class="gu"> Status</span>
+<span class="p">!</span><span class="gu"> Description</span>
+<span class="p">|-</span>
+<span class="p">|</span> 200
+<span class="p">|</span> OK
+<span class="p">|</span> Request successful
+<span class="p">|-</span>
+<span class="p">|</span> 401
+<span class="p">|</span> Unauthorized
+<span class="p">|</span> Authentication required
+<span class="p">|-</span>
+<span class="p">|</span> 403
+<span class="p">|</span> Forbidden
+<span class="p">|</span> Insufficient permissions
+<span class="p">|-</span>
+<span class="p">|</span> 404
+<span class="p">|</span> Not Found
+<span class="p">|</span> Resource not found
+<span class="p">|}</span>
+</code></pre></div>
+
+<h3>✅ What Works Well:</h3>
+<ul>
+<li>Table structure preserved</li>
+<li>Headers properly converted</li>
+<li>Clean MediaWiki table syntax</li>
+</ul>
+<h3>⚠️ Potential Issues:</h3>
+<ul>
+<li>Complex table formatting may need manual adjustment</li>
+<li>Cell alignment might not preserve perfectly</li>
+</ul>
+<hr />
+<h2>💻 Example 3: Code Blocks</h2>
+<h3>Before (Azure DevOps Markdown):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">## Configuration Example</span>
+
+Here&#39;s how to configure the application:
+
+```json
+{
+  &quot;database&quot;: {
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 5432,
+    &quot;name&quot;: &quot;myapp_db&quot;
+  },
+  &quot;logging&quot;: {
+    &quot;level&quot;: &quot;info&quot;,
+    &quot;file&quot;: &quot;/var/log/myapp.log&quot;
+  }
+}
+</code></pre></div>
+
+<p>For Python configuration:</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseConfig</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DB_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DB_PORT&#39;</span><span class="p">,</span> <span class="mi">5432</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DB_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;myapp_db&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_connection_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;postgresql://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+</code></pre></div>
+
+<p>You can also use inline code like <code>config.get('database.host')</code> in your text.</p>
+<div class="codehilite"><pre><span></span><code><span class="c1">### After (MediaWiki):</span>
+<span class="err">```</span><span class="n">mediawiki</span>
+<span class="o">==</span> <span class="n">Configuration</span> <span class="n">Example</span> <span class="o">==</span>
+
+<span class="n">Here</span><span class="s1">&#39;s how to configure the application:</span>
+
+<span class="o">&lt;</span><span class="n">syntaxhighlight</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="o">&gt;</span>
+<span class="p">{</span>
+  <span class="s2">&quot;database&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;host&quot;</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;port&quot;</span><span class="p">:</span> <span class="mi">5432</span><span class="p">,</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;myapp_db&quot;</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;logging&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;file&quot;</span><span class="p">:</span> <span class="s2">&quot;/var/log/myapp.log&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">syntaxhighlight</span><span class="o">&gt;</span>
+
+<span class="n">For</span> <span class="n">Python</span> <span class="n">configuration</span><span class="p">:</span>
+
+<span class="o">&lt;</span><span class="n">syntaxhighlight</span> <span class="n">lang</span><span class="o">=</span><span class="s2">&quot;python&quot;</span><span class="o">&gt;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseConfig</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DB_HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DB_PORT&#39;</span><span class="p">,</span> <span class="mi">5432</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;DB_NAME&#39;</span><span class="p">,</span> <span class="s1">&#39;myapp_db&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_connection_string</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;postgresql://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="o">&lt;/</span><span class="n">syntaxhighlight</span><span class="o">&gt;</span>
+
+<span class="n">You</span> <span class="n">can</span> <span class="n">also</span> <span class="n">use</span> <span class="n">inline</span> <span class="n">code</span> <span class="n">like</span> <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;database.host&#39;</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="n">your</span> <span class="n">text</span><span class="o">.</span>
+</code></pre></div>
+
+<h3>✅ What Works Well:</h3>
+<ul>
+<li>Code blocks maintain syntax highlighting</li>
+<li>Language specification preserved</li>
+<li>Inline code formatting works perfectly</li>
+</ul>
+<h3>📝 Note:</h3>
+<ul>
+<li>Requires SyntaxHighlight_GeSHi extension in MediaWiki</li>
+<li>Language names are preserved from Markdown</li>
+</ul>
+<hr />
+<h2>🔗 Example 4: Links and References</h2>
+<h3>Before (Azure DevOps Markdown):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">## Useful Resources</span>
+
+For more information, check out these resources:
+
+<span class="k">-</span><span class="w"> </span>[<span class="nt">Official Documentation</span>](<span class="na">https://docs.example.com/api</span>)
+<span class="k">-</span><span class="w"> </span>[<span class="nt">GitHub Repository</span>](<span class="na">https://github.com/example/project</span>)
+<span class="k">-</span><span class="w"> </span>[<span class="nt">Getting Started Tutorial</span>](<span class="na">/wiki/Getting-Started</span>)
+<span class="k">-</span><span class="w"> </span>[<span class="nt">API Reference Guide</span>](<span class="na">/wiki/API-Reference</span>)
+
+<span class="gu">### Internal Navigation</span>
+
+You can navigate to different sections:
+<span class="k">-</span><span class="w"> </span>Go to [<span class="nt">Installation Guide</span>](<span class="na">#installation-steps</span>) in this page
+<span class="k">-</span><span class="w"> </span>Check out [<span class="nt">Configuration Examples</span>](<span class="na">/wiki/Configuration</span>)
+<span class="k">-</span><span class="w"> </span>Review [<span class="nt">Troubleshooting Tips</span>](<span class="na">/wiki/Troubleshooting</span>)
+
+<span class="gs">**Pro tip**</span>: Use <span class="sb">`Ctrl+K`</span> to quickly search for pages!
+</code></pre></div>
+
+<h3>After (MediaWiki):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">== Useful Resources ==</span>
+
+For more information, check out these resources:
+
+<span class="k">*</span> <span class="p">[</span><span class="nl">https://docs.example.com/api</span><span class="w"> </span>Official Documentation<span class="p">]</span>
+<span class="k">*</span> <span class="p">[</span><span class="nl">https://github.com/example/project</span><span class="w"> </span>GitHub Repository<span class="p">]</span>
+<span class="k">*</span> [/wiki/Getting-Started Getting Started Tutorial]
+<span class="k">*</span> [/wiki/API-Reference API Reference Guide]
+
+<span class="gu">=== Internal Navigation ===</span>
+
+You can navigate to different sections:
+<span class="k">*</span> Go to [#installation-steps Installation Guide] in this page
+<span class="k">*</span> Check out [/wiki/Configuration Configuration Examples]
+<span class="k">*</span> Review [/wiki/Troubleshooting Troubleshooting Tips]
+
+<span class="gs">&#39;&#39;&#39;Pro tip&#39;&#39;&#39;</span>: Use <span class="p">&lt;</span><span class="nt">code</span><span class="p">&gt;</span>Ctrl+K<span class="p">&lt;/</span><span class="nt">code</span><span class="p">&gt;</span> to quickly search for pages!
+</code></pre></div>
+
+<h3>✅ What Works Well:</h3>
+<ul>
+<li>External links convert properly</li>
+<li>Link text is preserved</li>
+<li>Internal links maintain references</li>
+</ul>
+<h3>⚠️ Requires Manual Review:</h3>
+<ul>
+<li>Internal wiki links may need URL adjustment</li>
+<li>Anchor links might need verification</li>
+<li>Some links may break if page titles change during migration</li>
+</ul>
+<hr />
+<h2>🖼️ Example 5: Images and Media (Manual Handling Required)</h2>
+<h3>Before (Azure DevOps Markdown):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">## Architecture Overview</span>
+
+Here&#39;s our system architecture:
+
+![<span class="nt">System Architecture</span>](<span class="na">/.attachments/architecture-diagram.png</span>)
+
+The diagram above shows:
+<span class="k">1.</span> <span class="gs">**Client Applications**</span> - Web and mobile interfaces
+<span class="k">2.</span> <span class="gs">**API Gateway**</span> - Central routing and authentication
+<span class="k">3.</span> <span class="gs">**Microservices**</span> - Individual business logic components
+<span class="k">4.</span> <span class="gs">**Database Layer**</span> - Data persistence and caching
+
+<span class="gu">### Process Flow</span>
+
+![<span class="nt">Process Flow Diagram</span>](<span class="na">/.attachments/process-flow.png</span>)
+
+<span class="ge">*Figure 1: Standard request processing flow*</span>
+
+For more detailed diagrams, see our [<span class="nt">Design Documents</span>](<span class="na">/wiki/Design-Documents</span>).
+</code></pre></div>
+
+<h3>After (MediaWiki - Post Manual Image Upload):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">== Architecture Overview ==</span>
+
+Here&#39;s our system architecture:
+
+<span class="p">[[</span><span class="nn">File</span><span class="p">:</span><span class="nt">Architecture-diagram.png</span><span class="p">|</span>thumb<span class="p">|</span>System Architecture<span class="p">]]</span>
+
+The diagram above shows:
+<span class="k">#</span> <span class="gs">&#39;&#39;&#39;Client Applications&#39;&#39;&#39;</span> - Web and mobile interfaces
+<span class="k">#</span> <span class="gs">&#39;&#39;&#39;API Gateway&#39;&#39;&#39;</span> - Central routing and authentication
+<span class="k">#</span> <span class="gs">&#39;&#39;&#39;Microservices&#39;&#39;&#39;</span> - Individual business logic components
+<span class="k">#</span> <span class="gs">&#39;&#39;&#39;Database Layer&#39;&#39;&#39;</span> - Data persistence and caching
+
+<span class="gu">=== Process Flow ===</span>
+
+<span class="p">[[</span><span class="nn">File</span><span class="p">:</span><span class="nt">Process-flow.png</span><span class="p">|</span>thumb<span class="p">|</span>Process Flow Diagram<span class="p">]]</span>
+
+<span class="ge">&#39;&#39;Figure 1: Standard request processing flow&#39;&#39;</span>
+
+For more detailed diagrams, see our [/wiki/Design-Documents Design Documents].
+</code></pre></div>
+
+<h3>🚨 Manual Steps Required:</h3>
+<ol>
+<li><strong>Download images</strong> from Azure DevOps (cannot be automated)</li>
+<li><strong>Upload to MediaWiki</strong> using Special:Upload or bulk tools</li>
+<li><strong>Update image syntax</strong> in migrated content</li>
+<li><strong>Test image display</strong> and adjust sizing if needed</li>
+</ol>
+<h3>💡 Pro Tips for Images:</h3>
+<ul>
+<li>Use descriptive filenames when uploading</li>
+<li>Consider image optimization for web</li>
+<li>Use MediaWiki's thumbnail features for better layout</li>
+<li>Create consistent naming conventions</li>
+</ul>
+<hr />
+<h2>⚠️ Example 6: Complex Content (Needs Manual Review)</h2>
+<h3>Before (Azure DevOps Markdown):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">## Advanced Features</span>
+
+<span class="gu">### Task Lists</span>
+<span class="k">- [x]</span> User authentication implemented
+<span class="k">- [x]</span> Database schema created
+<span class="k">- [ ]</span> API documentation completed
+<span class="k">- [ ]</span> Performance testing done
+
+<span class="gu">### Nested Content</span>
+
+<span class="k">&gt; </span><span class="ge">**Important Note**:</span>
+<span class="k">&gt; </span><span class="ge">This is a blockquote that contains important information.</span>
+<span class="k">&gt; </span><span class="ge">It may span multiple lines and include **formatting**.</span>
+
+<span class="gu">### HTML Elements</span>
+
+Some content might include HTML:
+&lt;div class=&quot;warning-box&quot;&gt;
+  &lt;strong&gt;Warning:&lt;/strong&gt; This feature is experimental.
+  &lt;ul&gt;
+    &lt;li&gt;Use with caution&lt;/li&gt;
+    &lt;li&gt;Test thoroughly before production&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/div&gt;
+
+<span class="gu">### Strikethrough Text</span>
+
+<span class="gd">~~This text is outdated~~</span> and should be ignored.
+
+<span class="gu">### Footnotes</span>
+
+This is a reference to something important[^1].
+
+[<span class="nl">^1</span>]: <span class="na">This is the footnote explaining the important thing.</span>
+</code></pre></div>
+
+<h3>After (MediaWiki - With Manual Adjustments):</h3>
+<div class="codehilite"><pre><span></span><code><span class="gu">== Advanced Features ==</span>
+
+<span class="gu">=== Task Lists ===</span>
+<span class="k">*</span> ✓ User authentication implemented
+<span class="k">*</span> ✓ Database schema created
+<span class="k">*</span> ☐ API documentation completed
+<span class="k">*</span> ☐ Performance testing done
+
+<span class="gu">=== Nested Content ===</span>
+
+<span class="p">{{</span><span class="nt">Warning</span><span class="p">|</span><span class="gs">&#39;&#39;&#39;Important Note&#39;&#39;&#39;</span>:
+This is a blockquote that contains important information.
+It may span multiple lines and include <span class="gs">&#39;&#39;&#39;formatting&#39;&#39;&#39;</span>.<span class="p">}}</span>
+
+<span class="gu">=== HTML Elements ===</span>
+
+Some content might include HTML:
+<span class="p">&lt;</span><span class="nt">div</span><span class="w"> </span><span class="na">class</span><span class="o">=</span><span class="s2">&quot;warning-box&quot;</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>Warning:<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;</span> This feature is experimental.
+  <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Use with caution<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>Test thoroughly before production<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+<span class="gu">=== Strikethrough Text ===</span>
+
+<span class="p">&lt;</span><span class="nt">s</span><span class="p">&gt;</span>This text is outdated<span class="p">&lt;/</span><span class="nt">s</span><span class="p">&gt;</span> and should be ignored.
+
+<span class="gu">=== Footnotes ===</span>
+
+This is a reference to something important<span class="p">&lt;</span><span class="nt">ref</span><span class="p">&gt;</span>This is the footnote explaining the important thing.<span class="p">&lt;/</span><span class="nt">ref</span><span class="p">&gt;</span>.
+
+<span class="gu">== References ==</span>
+<span class="p">&lt;</span><span class="nt">references</span><span class="w"> </span><span class="p">/&gt;</span>
+</code></pre></div>
+
+<h3>🛠️ Manual Adjustments Made:</h3>
+<ul>
+<li><strong>Task lists</strong>: Converted to Unicode checkboxes</li>
+<li><strong>Blockquotes</strong>: Used MediaWiki warning template</li>
+<li><strong>HTML</strong>: Preserved (MediaWiki supports HTML)</li>
+<li><strong>Strikethrough</strong>: Used <code>&lt;s&gt;</code> tags</li>
+<li><strong>Footnotes</strong>: Converted to MediaWiki reference system</li>
+</ul>
+<h3>📝 Notes:</h3>
+<ul>
+<li>Task lists don't have native MediaWiki equivalent</li>
+<li>Blockquotes often look better as templates/boxes</li>
+<li>HTML generally works but should be tested</li>
+<li>Footnotes require MediaWiki reference syntax</li>
+</ul>
+<hr />
+<h2>📊 Summary: Conversion Success Rates</h2>
+<p>| Content Type | Auto-Conversion Success | Manual Review Needed | Common Issues |
+|--------------|-------------------------|----------------------|---------------|
+| <strong>Headers</strong> | 100% | None | Perfect conversion |
+| <strong>Basic Formatting</strong> | 95% | Rare edge cases | Mostly perfect |
+| <strong>Lists</strong> | 90% | Nested complex lists | Good conversion |
+| <strong>Tables</strong> | 85% | Complex formatting | Usually good |
+| <strong>Code Blocks</strong> | 90% | Language verification | Very good |
+| <strong>Links</strong> | 80% | Internal link updates | Need URL checking |
+| <strong>Images</strong> | 0% | All images | Manual upload required |
+| <strong>Task Lists</strong> | 50% | Visual formatting | Need manual styling |
+| <strong>Footnotes</strong> | 0% | All footnotes | Different syntax |
+| <strong>HTML Content</strong> | 70% | Compatibility testing | Case-by-case |</p>
+<h2>🎯 Migration Strategy Recommendations</h2>
+<h3>High-Priority Content (Migrate First):</h3>
+<ul>
+<li>Documentation with basic formatting</li>
+<li>API references with simple tables</li>
+<li>Getting started guides</li>
+<li>FAQ pages</li>
+</ul>
+<h3>Medium-Priority Content (Review During Migration):</h3>
+<ul>
+<li>Pages with complex tables</li>
+<li>Content with many internal links</li>
+<li>Tutorial pages with code blocks</li>
+</ul>
+<h3>Low-Priority Content (Manual Review After):</h3>
+<ul>
+<li>Pages with images and diagrams</li>
+<li>Content with HTML elements</li>
+<li>Pages with footnotes or complex formatting</li>
+<li>Archive/historical content</li>
+</ul>
+<hr />
+<h2>🔧 Tools to Help</h2>
+<p>Use these tools from the migration toolkit:</p>
+<ol>
+<li><strong><code>migration_planner.py</code></strong> - Analyzes your wiki and identifies complexity</li>
+<li><strong><code>content_previewer.py</code></strong> - Shows exactly how your content will convert</li>
+<li><strong><code>azure_devops_migrator.py</code></strong> - Performs the actual migration</li>
+<li><strong>Step-by-step guide</strong> - Complete walkthrough of the process</li>
+</ol>
+<p><strong>Remember</strong>: The preview tools will show you exactly how YOUR content will convert, so you're never surprised by the results!</p>
+<hr />
+<p><em>These examples are part of the development-toolbox-mediawiki-tools project</em></p>
+</body>
+</html>

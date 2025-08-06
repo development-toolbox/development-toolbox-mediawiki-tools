@@ -279,7 +279,7 @@
     <header>
         <div class="container">
             <h1>🚀 MediaWiki Migration Tools</h1>
-            <p>Complete toolkit for migrating from Azure DevOps Wiki to MediaWiki</p>
+            <p>A comprehensive toolkit for MediaWiki management including migration, maintenance, synchronization, and automation tools</p>
         </div>
     </header>
 
@@ -290,6 +290,7 @@
                 <li><a href="#tools" class="nav-link">Tools</a></li>
                 <li><a href="#getting-started" class="nav-link">Getting Started</a></li>
                 <li><a href="#examples" class="nav-link">Examples</a></li>
+                <li><a href="#howto-guides" class="nav-link">How-To Guides</a></li>
                 <li><a href="#troubleshooting" class="nav-link">Troubleshooting</a></li>
                 <li><a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools" target="_blank">GitHub</a></li>
             </ul>
@@ -312,7 +313,7 @@
                     <div class="cards">
                         <div class="card">
                             <span class="card-icon">📊</span>
-                            <h3>Analysis Tools</h3>
+                            <h3><a href="#migration-planner" style="text-decoration: none; color: var(--primary-color);">Analysis Tools</a></h3>
                             <p>Analyze your wiki content complexity and get migration time estimates before starting.</p>
                             <div class="mt-2">
                                 <span class="badge badge-success">migration_planner.py</span>
@@ -321,7 +322,7 @@
 
                         <div class="card">
                             <span class="card-icon">🔄</span>
-                            <h3>Migration Engine</h3>
+                            <h3><a href="#azure-migrator" style="text-decoration: none; color: var(--primary-color);">Migration Engine</a></h3>
                             <p>Automated migration with intelligent content conversion and error handling.</p>
                             <div class="mt-2">
                                 <span class="badge badge-success">azure_devops_migrator.py</span>
@@ -330,7 +331,7 @@
 
                         <div class="card">
                             <span class="card-icon">👁️</span>
-                            <h3>Preview Tools</h3>
+                            <h3><a href="#content-previewer" style="text-decoration: none; color: var(--primary-color);">Preview Tools</a></h3>
                             <p>Preview how your content will look in MediaWiki before migrating.</p>
                             <div class="mt-2">
                                 <span class="badge badge-success">content_previewer.py</span>
@@ -339,7 +340,7 @@
 
                         <div class="card">
                             <span class="card-icon">📚</span>
-                            <h3>Template Management</h3>
+                            <h3><a href="#template-importer" style="text-decoration: none; color: var(--primary-color);">Template Management</a></h3>
                             <p>Import and manage MediaWiki templates for consistent formatting.</p>
                             <div class="mt-2">
                                 <span class="badge badge-success">mediawiki_import.py</span>
@@ -372,6 +373,109 @@
                                 <li>Embedded media</li>
                             </ul>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Getting Started Section -->
+            <section id="getting-started" class="section">
+                <div class="section-header">
+                    <h2>🚀 Getting Started</h2>
+                    <p>Quick setup with our interactive getting started script</p>
+                </div>
+                <div class="section-content">
+                    <div class="alert alert-success">
+                        <strong>🎯 New Users:</strong> Start here for guided setup and tool selection!
+                    </div>
+
+                    <h3>Interactive Setup Script</h3>
+                    <p>The easiest way to get started is with our interactive setup script that automatically detects your environment and guides you through the setup process.</p>
+
+                    <div class="code-example">
+                        <div class="code-header">Quick Start</div>
+                        <pre><code class="language-bash"># Clone the repository
+git clone https://github.com/development-toolbox/development-toolbox-mediawiki-tools.git
+cd development-toolbox-mediawiki-tools
+
+# Run the interactive getting started script
+python getting_started.py</code></pre>
+                    </div>
+
+                    <h3 class="mt-2">What the Script Does</h3>
+                    <div class="cards">
+                        <div class="card">
+                            <span class="card-icon">🔍</span>
+                            <h4>Environment Detection</h4>
+                            <p>Automatically detects your platform, Python installation, and shell environment.</p>
+                            <ul class="mt-1">
+                                <li>🚀 Git Bash on Windows (Recommended)</li>
+                                <li>🐧 Linux (All distributions)</li>
+                                <li>🍎 macOS (Terminal/iTerm2)</li>
+                                <li>🪟 Windows (PowerShell/CMD)</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <span class="card-icon">⚙️</span>
+                            <h4>Configuration Setup</h4>
+                            <p>Creates a <code>.toolkit_env</code> file with your system configuration without affecting your global environment.</p>
+                            <ul class="mt-1">
+                                <li>Python executable path</li>
+                                <li>Shell and OS detection</li>
+                                <li>Docker configuration</li>
+                                <li>Project paths</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <span class="card-icon">🛠️</span>
+                            <h4>Tool Selection Menu</h4>
+                            <p>Interactive menu to choose what you want to do:</p>
+                            <ul class="mt-1">
+                                <li>📦 Azure DevOps Wiki Migration</li>
+                                <li>🔍 Content Analysis & Planning</li>
+                                <li>👁️ Content Preview & Validation</li>
+                                <li>🐳 Local MediaWiki Environment</li>
+                                <li>📚 Documentation Access</li>
+                                <li>❓ Help & Support</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <span class="card-icon">🎯</span>
+                            <h4>Platform-Specific Tips</h4>
+                            <p>Provides targeted advice based on your environment:</p>
+                            <ul class="mt-1">
+                                <li>Git Bash users get Unix-style guidance</li>
+                                <li>Windows users get specific installation tips</li>
+                                <li>Docker command variations handled automatically</li>
+                                <li>Python path issues resolved automatically</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-2">Alternative Manual Setup</h3>
+                    <p>If you prefer to set up manually or want to use specific tools directly:</p>
+
+                    <div class="code-example">
+                        <div class="code-header">Manual Installation</div>
+                        <pre><code class="language-bash"># Navigate to specific tool directory
+cd migration/
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment variables
+cp .env.template .env
+# Edit .env with your credentials
+
+# Run specific tools
+python migration_planner.py
+python azure_devops_migrator.py</code></pre>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>💡 Tip:</strong> The interactive script is recommended as it handles cross-platform compatibility and provides guided workflows for each tool.
                     </div>
                 </div>
             </section>
@@ -463,109 +567,6 @@
                 </div>
             </section>
 
-            <!-- Getting Started Section -->
-            <section id="getting-started" class="section">
-                <div class="section-header">
-                    <h2>🚀 Getting Started</h2>
-                    <p>Step-by-step guide to migrate your wiki in 6 phases</p>
-                </div>
-                <div class="section-content">
-                    <div class="alert alert-warning">
-                        <strong>⚠️ Prerequisites:</strong> Ensure you have Python 3.7+, access to both Azure DevOps and MediaWiki, and proper API permissions.
-                    </div>
-
-                    <div class="steps">
-                        <div class="step">
-                            <h3>Phase 1: Environment Setup</h3>
-                            <p>Install dependencies and configure your environment.</p>
-
-                            <div class="code-example">
-                                <div class="code-header">Installation</div>
-                                <pre><code class="language-bash"># Clone the repository
-git clone https://github.com/development-toolbox/development-toolbox-mediawiki-tools.git
-cd development-toolbox-mediawiki-tools
-
-# Install dependencies
-pip install -r migration/requirements.txt
-
-# Set up environment variables
-cp .env.example .env
-# Edit .env with your credentials</code></pre>
-                            </div>
-                        </div>
-
-                        <div class="step">
-                            <h3>Phase 2: Analysis</h3>
-                            <p>Analyze your Azure DevOps wiki to understand migration complexity.</p>
-
-                            <div class="code-example">
-                                <div class="code-header">Run Analysis</div>
-                                <pre><code class="language-bash">python migration/migration_planner.py</code></pre>
-                            </div>
-
-                            <div class="alert alert-info">
-                                <strong>📄 Output:</strong> Creates <code>migration_analysis_report.md</code> with detailed recommendations.
-                            </div>
-                        </div>
-
-                        <div class="step">
-                            <h3>Phase 3: Environment Preparation</h3>
-                            <p>Set up your MediaWiki test environment and configure access.</p>
-
-                            <div class="code-example">
-                                <div class="code-header">Docker Setup (Optional)</div>
-                                <pre><code class="language-bash"># Start local MediaWiki for testing
-docker-compose up -d
-
-# Access at http://localhost:8080</code></pre>
-                            </div>
-                        </div>
-
-                        <div class="step">
-                            <h3>Phase 4: Content Preview</h3>
-                            <p>Preview how your content will convert before migration.</p>
-
-                            <div class="code-example">
-                                <div class="code-header">Preview Content</div>
-                                <pre><code class="language-bash"># Preview specific pages
-python migration/content_previewer.py --page "Home"
-
-# Generate sample conversions
-python migration/content_previewer.py --sample-pages 5</code></pre>
-                            </div>
-                        </div>
-
-                        <div class="step">
-                            <h3>Phase 5: Template Setup</h3>
-                            <p>Import necessary MediaWiki templates for consistent formatting.</p>
-
-                            <div class="code-example">
-                                <div class="code-header">Import Templates</div>
-                                <pre><code class="language-bash">python templates/mediawiki_import.py --import templates/</code></pre>
-                            </div>
-                        </div>
-
-                        <div class="step">
-                            <h3>Phase 6: Migration Execution</h3>
-                            <p>Execute the migration with monitoring and validation.</p>
-
-                            <div class="code-example">
-                                <div class="code-header">Run Migration</div>
-                                <pre><code class="language-bash"># Start with a test batch
-python migration/azure_devops_migrator.py --wiki "ProjectDocs" --batch-size 10
-
-# Full migration
-python migration/azure_devops_migrator.py --wiki "ProjectDocs"</code></pre>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="alert alert-success">
-                        <strong>✅ Success!</strong> Your wiki has been migrated. Review the conversion quality checklist in the documentation.
-                    </div>
-                </div>
-            </section>
-
             <!-- Examples Section -->
             <section id="examples" class="section">
                 <div class="section-header">
@@ -573,63 +574,337 @@ python migration/azure_devops_migrator.py --wiki "ProjectDocs"</code></pre>
                     <p>See how different content types convert from Azure DevOps to MediaWiki</p>
                 </div>
                 <div class="section-content">
+                    <div class="alert alert-info">
+                        <strong>💡 Pro Tip:</strong> Use the Content Previewer tool to see exactly how YOUR content will convert before migration.
+                        <br><code>python migration/content_previewer.py --page "YourPageName"</code>
+                    </div>
+
                     <div class="cards">
                         <div class="card">
-                            <h3>Headers & Formatting</h3>
+                            <h3>🔤 Text Formatting</h3>
                             <div class="code-example">
-                                <div class="code-header">Azure DevOps (Markdown)</div>
-                                <pre><code class="language-markdown"># Main Title
-## Section Title
-**Bold text** and *italic text*</code></pre>
+                                <div class="code-header">Azure DevOps → MediaWiki</div>
+                                <pre><code class="language-markdown"># Azure DevOps Markdown
+**Bold text** and *italic text*
+`inline code`
+
+# MediaWiki Result
+'''Bold text''' and ''italic text''
+&lt;code&gt;inline code&lt;/code&gt;</code></pre>
                             </div>
-                            <div class="code-example">
-                                <div class="code-header">MediaWiki (Converted)</div>
-                                <pre><code class="language-mediawiki">= Main Title =
-== Section Title ==
-'''Bold text''' and ''italic text''</code></pre>
-                            </div>
+                            <span class="badge badge-success">100% Automated</span>
                         </div>
 
                         <div class="card">
-                            <h3>Code Blocks</h3>
+                            <h3>📋 Lists & Headers</h3>
                             <div class="code-example">
-                                <div class="code-header">Azure DevOps (Markdown)</div>
-                                <pre><code class="language-markdown">```python
-def hello_world():
-    print("Hello, World!")
-```</code></pre>
+                                <div class="code-header">Azure DevOps → MediaWiki</div>
+                                <pre><code class="language-markdown"># Azure DevOps Markdown
+## Section Title
+- Item 1
+- Item 2
+
+# MediaWiki Result
+== Section Title ==
+* Item 1
+* Item 2</code></pre>
                             </div>
+                            <span class="badge badge-success">100% Automated</span>
+                        </div>
+
+                        <div class="card">
+                            <h3>💻 Code Blocks</h3>
                             <div class="code-example">
-                                <div class="code-header">MediaWiki (Converted)</div>
-                                <pre><code class="language-mediawiki">&lt;syntaxhighlight lang="python"&gt;
-def hello_world():
-    print("Hello, World!")
+                                <div class="code-header">Azure DevOps → MediaWiki</div>
+                                <pre><code class="language-markdown"># Azure DevOps Markdown
+```python
+def hello():
+    print("Hello!")
+```
+
+# MediaWiki Result
+&lt;syntaxhighlight lang="python"&gt;
+def hello():
+    print("Hello!")
 &lt;/syntaxhighlight&gt;</code></pre>
                             </div>
+                            <span class="badge badge-success">95% Automated</span>
                         </div>
 
                         <div class="card">
-                            <h3>Tables</h3>
+                            <h3>📊 Tables</h3>
                             <div class="code-example">
-                                <div class="code-header">Azure DevOps (Markdown)</div>
-                                <pre><code class="language-markdown">| Name | Role | Status |
-|------|------|--------|
-| John | Dev  | Active |</code></pre>
-                            </div>
-                            <div class="code-example">
-                                <div class="code-header">MediaWiki (Converted)</div>
-                                <pre><code class="language-mediawiki">{| class="wikitable"
+                                <div class="code-header">Azure DevOps → MediaWiki</div>
+                                <pre><code class="language-markdown"># Azure DevOps Markdown
+| Name | Role |
+|------|------|
+| John | Dev  |
+
+# MediaWiki Result
+{| class="wikitable"
 |-
-! Name !! Role !! Status
+! Name !! Role
 |-
-| John || Dev || Active
+| John || Dev
 |}</code></pre>
+                            </div>
+                            <span class="badge badge-warning">85% Automated</span>
+                        </div>
+
+                        <div class="card">
+                            <h3>🖼️ Images</h3>
+                            <div class="code-example">
+                                <div class="code-header">Requires Manual Handling</div>
+                                <pre><code class="language-markdown"># Azure DevOps Markdown
+![Alt text](/.attachments/image.png)
+
+# Manual Process Required:
+# 1. Download image from Azure DevOps
+# 2. Upload to MediaWiki
+# 3. Update syntax to:
+[[File:Image.png|alt=Alt text]]</code></pre>
+                            </div>
+                            <span class="badge badge-danger">Manual Process</span>
+                        </div>
+
+                        <div class="card">
+                            <h3>🔗 Links</h3>
+                            <div class="code-example">
+                                <div class="code-header">Azure DevOps → MediaWiki</div>
+                                <pre><code class="language-markdown"># Azure DevOps Markdown
+[Link text](https://example.com)
+[Internal link](/wiki/Page)
+
+# MediaWiki Result
+[https://example.com Link text]
+[[Page|Internal link]]</code></pre>
+                            </div>
+                            <span class="badge badge-warning">80% Automated</span>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>📖 Complete Examples:</strong> For detailed conversion scenarios and troubleshooting, see:
+                        <br>• <a href="content-conversion-examples.html" target="_blank">Conversion Syntax Reference</a>
+                        <br>• <a href="content_examples.html" target="_blank">Real-world Migration Examples</a>
+                        <br>• <a href="complete-migration-guide.html" target="_blank">Complete Migration Guide</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- How-To Guides Section -->
+            <section id="howto-guides" class="section">
+                <div class="section-header">
+                    <h2>📚 How-To Guides</h2>
+                    <p>Step-by-step guides for common migration scenarios</p>
+                </div>
+                <div class="section-content">
+                    <div class="alert alert-info">
+                        <strong>🎯 Choose Your Scenario:</strong> Select the guide that best matches your situation.
+                    </div>
+
+                    <div class="cards">
+                        <div class="card">
+                            <h3>🚀 Quick Migration (10-50 pages)</h3>
+                            <p><strong>Best for:</strong> Small team wikis, simple documentation</p>
+
+                            <div class="code-example">
+                                <div class="code-header">Step-by-Step Commands</div>
+                                <pre><code class="language-bash"># 1. Quick setup
+python getting_started.py
+
+# 2. Analyze your wiki
+python migration/migration_planner.py --wiki "TeamDocs"
+
+# 3. Preview key pages
+python migration/content_previewer.py --page "Home"
+
+# 4. Run migration
+python migration/azure_devops_migrator.py --wiki "TeamDocs"</code></pre>
+                            </div>
+
+                            <p><strong>Expected time:</strong> 15-30 minutes</p>
+                            <span class="badge badge-success">Beginner Friendly</span>
+                        </div>
+
+                        <div class="card">
+                            <h3>🏢 Department Migration (100-500 pages)</h3>
+                            <p><strong>Best for:</strong> Large teams, complex content structure</p>
+
+                            <div class="code-example">
+                                <div class="code-header">Phased Approach</div>
+                                <pre><code class="language-bash"># 1. Comprehensive analysis
+python migration/migration_planner.py --wiki "DeptWiki" --detailed
+
+# 2. Preview multiple pages
+python migration/content_previewer.py --sample-pages 20
+
+# 3. Test with small batch
+python migration/azure_devops_migrator.py --wiki "DeptWiki" \
+    --batch-size 10 --dry-run
+
+# 4. Migrate in phases
+python migration/azure_devops_migrator.py --wiki "DeptWiki" \
+    --batch-size 25 --exclude-pattern "Archive/*"
+
+# 5. Validate results
+python migration/validation_tool.py --wiki "DeptWiki"</code></pre>
+                            </div>
+
+                            <p><strong>Expected time:</strong> 2-4 hours</p>
+                            <span class="badge badge-warning">Intermediate</span>
+                        </div>
+
+                        <div class="card">
+                            <h3>🌐 Enterprise Migration (500+ pages)</h3>
+                            <p><strong>Best for:</strong> Organization-wide wikis, legacy content</p>
+
+                            <div class="code-example">
+                                <div class="code-header">Strategic Migration</div>
+                                <pre><code class="language-bash"># 1. Strategic analysis
+python migration/migration_planner.py --wiki "EnterpriseWiki" \
+    --detailed --export-analysis
+
+# 2. Current content first
+python migration/azure_devops_migrator.py --wiki "EnterpriseWiki" \
+    --modified-after "2023-01-01" \
+    --exclude-pattern "Archive/*,Deprecated/*" \
+    --batch-size 10
+
+# 3. Archive content separately
+python migration/azure_devops_migrator.py --wiki "EnterpriseWiki" \
+    --include-pattern "Archive/*" \
+    --target-namespace "Archive" \
+    --batch-size 5</code></pre>
+                            </div>
+
+                            <p><strong>Expected time:</strong> 1-2 days</p>
+                            <span class="badge badge-danger">Advanced</span>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-2">🔧 Advanced Techniques</h3>
+
+                    <div class="cards">
+                        <div class="card">
+                            <h3>📊 Content Analysis Deep Dive</h3>
+                            <div class="code-example">
+                                <div class="code-header">Comprehensive Analysis</div>
+                                <pre><code class="language-bash"># Generate detailed complexity report
+python migration/migration_planner.py --wiki "MyWiki" \
+    --detailed --export-analysis --complexity-scoring
+
+# Analyze specific content patterns
+python migration/content_previewer.py --all-pages \
+    --categorize --output-dir "./analysis"
+
+# Export analysis data for review
+python migration/migration_planner.py --wiki "MyWiki" \
+    --export-format json --output "analysis.json"</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>🎯 Selective Migration</h3>
+                            <div class="code-example">
+                                <div class="code-header">Targeted Content Migration</div>
+                                <pre><code class="language-bash"># Migrate only recent content
+python migration/azure_devops_migrator.py --wiki "MyWiki" \
+    --modified-after "2024-01-01"
+
+# Migrate specific pages only
+python migration/azure_devops_migrator.py --wiki "MyWiki" \
+    --pages "Home,Setup,FAQ,Troubleshooting"
+
+# Exclude patterns
+python migration/azure_devops_migrator.py --wiki "MyWiki" \
+    --exclude-pattern "Draft/*,Archive/*,Temp/*"</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>🔄 Resume and Recovery</h3>
+                            <div class="code-example">
+                                <div class="code-header">Handle Interruptions</div>
+                                <pre><code class="language-bash"># Resume from specific page
+python migration/azure_devops_migrator.py --wiki "MyWiki" \
+    --resume-from "Page Name"
+
+# Process failed pages only
+python migration/azure_devops_migrator.py --wiki "MyWiki" \
+    --retry-failed
+
+# Custom retry strategy
+python migration/azure_devops_migrator.py --wiki "MyWiki" \
+    --max-retries 5 --retry-delay 10</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>⚡ Performance Optimization</h3>
+                            <div class="code-example">
+                                <div class="code-header">Speed Optimization</div>
+                                <pre><code class="language-bash"># Fast migration (small wikis)
+python migration/azure_devops_migrator.py --wiki "MyWiki" \
+    --batch-size 50 --rate-limit 0.5
+
+# Conservative migration (large wikis)
+python migration/azure_devops_migrator.py --wiki "MyWiki" \
+    --batch-size 5 --rate-limit 3
+
+# Parallel processing (experimental)
+python migration/azure_devops_migrator.py --wiki "MyWiki" \
+    --parallel-workers 3</code></pre>
                             </div>
                         </div>
                     </div>
 
-                    <div class="alert alert-info">
-                        <strong>📖 More Examples:</strong> See the complete <a href="content-conversion-examples.md" target="_blank">Content Conversion Guide</a> and <a href="content_examples.md" target="_blank">Real-world Examples</a> for detailed conversion scenarios.
+                    <h3 class="mt-2">🛡️ Best Practices</h3>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Pre-Migration Checklist:</strong>
+                        <ul class="mt-1">
+                            <li>✅ Backup source content</li>
+                            <li>✅ Test with development MediaWiki instance</li>
+                            <li>✅ Run migration planner analysis</li>
+                            <li>✅ Preview representative content</li>
+                            <li>✅ Verify API credentials and permissions</li>
+                            <li>✅ Plan for manual image migration</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>✅ Post-Migration Tasks:</strong>
+                        <ul class="mt-1">
+                            <li>🔍 Run validation tool</li>
+                            <li>📝 Review conversion_issues.md report</li>
+                            <li>🖼️ Manually migrate images and attachments</li>
+                            <li>🔗 Update internal links if needed</li>
+                            <li>👥 Train users on MediaWiki features</li>
+                            <li>📊 Monitor usage and gather feedback</li>
+                        </ul>
+                    </div>
+
+                    <div class="cards">
+                        <div class="card">
+                            <h3>📈 Success Metrics</h3>
+                            <ul>
+                                <li><strong>Content Accuracy:</strong> >95% automatic conversion</li>
+                                <li><strong>Link Integrity:</strong> >90% working internal links</li>
+                                <li><strong>User Adoption:</strong> >80% user satisfaction</li>
+                                <li><strong>Performance:</strong> Page load times <2 seconds</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <h3>🚨 Red Flags</h3>
+                            <ul>
+                                <li><strong>High failure rate:</strong> >10% pages failed</li>
+                                <li><strong>Content corruption:</strong> Broken formatting</li>
+                                <li><strong>Missing content:</strong> Pages not migrated</li>
+                                <li><strong>Performance issues:</strong> Slow response times</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </section>

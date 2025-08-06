@@ -1,0 +1,22 @@
+# MediaWiki Development Toolkit Environment
+# This file configures the toolkit without affecting your system
+
+# Python Configuration
+TOOLKIT_PYTHON_EXECUTABLE=C:\Users\drbee\AppData\Local\Programs\Python\Python313\python.exe
+TOOLKIT_PYTHON_VERSION=3.13.5
+
+# Shell Configuration  
+TOOLKIT_SHELL=C:\Program Files\Git\usr\bin\bash.exe
+TOOLKIT_OS=Windows
+
+# Docker Configuration
+TOOLKIT_DOCKER_COMPOSE_CMD=auto
+
+# Git Configuration
+TOOLKIT_GIT_BASH=true
+
+# Paths (customize these as needed)
+TOOLKIT_WORK_DIR=C:\GitRepos\development-toolbox-mediawiki-tools
+TOOLKIT_MIGRATION_DIR=C:\GitRepos\development-toolbox-mediawiki-tools\migration
+TOOLKIT_DOCS_DIR=C:\GitRepos\development-toolbox-mediawiki-tools\docs
+TOOLKIT_EXAMPLES_DIR=C:\GitRepos\development-toolbox-mediawiki-tools\examples
