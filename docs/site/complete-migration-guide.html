@@ -3,419 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Migration Guide - MediaWiki Migration Tools</title>
+    <title>Complete Migration Guide - MediaWiki Tools</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        h1, h2, h3 { color: #2563eb; }
-        code { background: #f1f5f9; padding: 2px 4px; border-radius: 3px; }
-        pre { background: #1e293b; color: white; padding: 1rem; border-radius: 8px; overflow-x: auto; }
-        .back-link { display: inline-block; margin-bottom: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; text-decoration: none; border-radius: 5px; }
-        table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-        th, td { border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; }
-        th { background: #f8fafc; }
+        /* Ant Design inspired CSS variables */
+        :root {
+            --primary-color: #1890ff;
+            --primary-hover: #40a9ff;
+            --primary-active: #0050b3;
+            --success-color: #52c41a;
+            --warning-color: #fa8c16;
+            --error-color: #f5222d;
+            --info-color: #1890ff;
+            --text-primary: rgba(0, 0, 0, 0.85);
+            --text-secondary: rgba(0, 0, 0, 0.65);
+            --text-disabled: rgba(0, 0, 0, 0.25);
+            --border-color: #d9d9d9;
+            --border-radius: 6px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            --bg-color: #ffffff;
+            --bg-light: #fafafa;
+            --bg-card: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.5715;
+            color: var(--text-primary);
+            background-color: var(--bg-light);
+        }
+
+        /* Layout */
+        .ant-layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ant-layout-header {
+            background: var(--bg-color);
+            padding: 0 24px;
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        .ant-layout-content {
+            flex: 1;
+            padding: 48px 24px;
+        }
+
+        .ant-layout-footer {
+            text-align: center;
+            background: var(--bg-light);
+            border-top: 1px solid #f0f0f0;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* Typography */
+        .ant-typography {
+            margin-bottom: 1em;
+        }
+
+        .ant-typography h1, .ant-typography h2, .ant-typography h3, .ant-typography h4 {
+            font-weight: 600;
+            margin: 1.6em 0 0.6em 0;
+        }
+
+        .ant-typography h1 { font-size: 38px; line-height: 1.23; }
+        .ant-typography h2 { font-size: 30px; line-height: 1.35; border-bottom: 1px solid #f0f0f0; padding-bottom: 0.3em; }
+        .ant-typography h3 { font-size: 24px; line-height: 1.35; }
+        .ant-typography h4 { font-size: 20px; line-height: 1.4; }
+        .ant-typography p { margin-bottom: 1em; }
+        .text-secondary { color: var(--text-secondary); }
+
+        /* Card */
+        .ant-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 24px;
+        }
+        .ant-card-body { padding: 24px; }
+
+        /* Alert */
+        .ant-alert {
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            margin-bottom: 16px;
+            border: 1px solid;
+        }
+        .ant-alert-info { background: #e6f7ff; border-color: #91d5ff; color: #0958d9; }
+        .ant-alert-success { background: #f6ffed; border-color: #b7eb8f; color: #389e0d; }
+        .ant-alert-error { background: #fff2f0; border-color: #ffccc7; color: #cf1322; }
+        .ant-alert-message { font-weight: 500; margin-bottom: 4px; }
+
+        /* Code */
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+            border: 1px solid #e8e8e8;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+        }
+        .code-block {
+            background: #f6f8fa;
+            padding: 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+            overflow-x: auto;
+        }
+
+        /* List */
+        ul, ol {
+            padding-left: 20px;
+            margin-bottom: 1em;
+        }
+        li { margin-bottom: 0.5em; }
+
+        /* Button */
+        .ant-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .ant-btn:hover {
+            border-color: var(--primary-hover);
+            color: var(--primary-hover);
+        }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-link">← Back to Main Documentation</a>
-<h1>Complete Azure DevOps to MediaWiki Migration Guide</h1>
-<p>This guide walks you through the entire process of migrating your Azure DevOps wiki to MediaWiki, from initial planning to final validation.</p>
-<h2>🎯 Overview</h2>
-<p><strong>Estimated Time</strong>: 2-8 hours (depending on wiki size and complexity)
-<strong>Difficulty</strong>: Intermediate
-<strong>Prerequisites</strong>: Basic command line knowledge, admin access to both systems</p>
-<h2>📋 Phase 1: Pre-Migration Planning (30-60 minutes)</h2>
-<h3>Step 1.1: Set Up Your Migration Environment</h3>
-<ol>
-<li>
-<p><strong>Clone the migration tools repository:</strong>
-   <code>bash
-   git clone https://github.com/development-toolbox/development-toolbox-mediawiki-tools.git
-   cd development-toolbox-mediawiki-tools</code></p>
-</li>
-<li>
-<p><strong>Set up Python environment:</strong>
-   <code>bash
-   # Install dependencies
-   cd migration
-   pip install -r requirements.txt</code></p>
-</li>
-<li>
-<p><strong>Configure your environment:</strong>
-   ```bash
-   # Copy environment template
-   cp .env.template .env</p>
-</li>
-</ol>
-<p># Edit .env with your credentials
-   notepad .env  # Windows
-   nano .env     # Linux/Mac
-   ```</p>
-<ol>
-<li><strong>Required credentials:</strong></li>
-<li><strong>Azure DevOps PAT</strong>: Go to Azure DevOps → Settings → Personal Access Tokens → New Token<ul>
-<li>Scopes needed: <code>Wiki (Read)</code></li>
-</ul>
-</li>
-<li><strong>MediaWiki credentials</strong>: Admin user with page creation permissions</li>
-</ol>
-<h3>Step 1.2: Analyze Your Current Wiki</h3>
-<ol>
-<li>
-<p><strong>Run the pre-migration analysis:</strong>
-   <code>bash
-   python migration_planner.py</code></p>
-</li>
-<li>
-<p><strong>Review the generated report:</strong></p>
-</li>
-<li>Open <code>migration_analysis_report.md</code></li>
-<li>Note pages requiring special attention</li>
-<li>Estimate total migration time</li>
-<li>
-<p>Identify images and attachments that need manual handling</p>
-</li>
-<li>
-<p><strong>Key things to look for:</strong></p>
-</li>
-<li>Number of pages with high complexity</li>
-<li>Total number of images/attachments</li>
-<li>Pages with tables or HTML content</li>
-<li>Internal links that might break</li>
-</ol>
-<h3>Step 1.3: Preview Content Conversion</h3>
-<ol>
-<li>
-<p><strong>Run content preview tool:</strong>
-   <code>bash
-   python content_previewer.py</code></p>
-</li>
-<li>
-<p><strong>Choose preview option:</strong></p>
-</li>
-<li>Select "Sample pages" for first-time migration</li>
-<li>
-<p>Select "Specific page" if you want to test a particular page</p>
-</li>
-<li>
-<p><strong>Review the preview report:</strong></p>
-</li>
-<li>Open <code>content_preview_report.md</code></li>
-<li>Check if the conversion looks acceptable</li>
-<li>Note any major formatting issues</li>
-</ol>
-<p>✅ <strong>Phase 1 Checkpoint</strong>: You should now have a clear understanding of your migration scope and complexity.</p>
-<hr />
-<h2>🛠️ Phase 2: MediaWiki Preparation (30-45 minutes)</h2>
-<h3>Step 2.1: Set Up MediaWiki Test Environment</h3>
-<ol>
-<li>
-<p><strong>Option A: Use Docker (Recommended for testing)</strong>
-   <code>bash
-   cd ../examples
-   docker-compose up -d
-   # MediaWiki will be available at http://localhost:8080</code></p>
-</li>
-<li>
-<p><strong>Option B: Use existing MediaWiki</strong></p>
-</li>
-<li>Ensure you have admin access</li>
-<li>Create a backup before testing</li>
-</ol>
-<h3>Step 2.2: Configure MediaWiki</h3>
-<ol>
-<li><strong>Enable necessary extensions</strong> (if not already enabled):</li>
-<li><strong>SyntaxHighlight_GeSHi</strong>: For code blocks</li>
-<li><strong>ParserFunctions</strong>: For advanced templates</li>
-<li>
-<p><strong>WikiEditor</strong>: Better editing experience</p>
-</li>
-<li>
-<p><strong>Test basic functionality:</strong></p>
-</li>
-<li>Create a test page with various formatting</li>
-<li>Verify code highlighting works</li>
-<li>Test table creation</li>
-</ol>
-<h3>Step 2.3: Prepare for Images and Attachments</h3>
-<ol>
-<li>
-<p><strong>Create directory for downloaded assets:</strong>
-   <code>bash
-   mkdir -p ../assets/images
-   mkdir -p ../assets/attachments</code></p>
-</li>
-<li>
-<p><strong>Plan image handling strategy:</strong></p>
-</li>
-<li>Will you migrate all images or just essential ones?</li>
-<li>Do you need to optimize image sizes?</li>
-<li>How will you handle internal image links?</li>
-</ol>
-<p>✅ <strong>Phase 2 Checkpoint</strong>: Your MediaWiki is ready and you have a plan for handling multimedia content.</p>
-<hr />
-<h2>🚀 Phase 3: Test Migration (45-90 minutes)</h2>
-<h3>Step 3.1: Run Small Test Migration</h3>
-<ol>
-<li>
-<p><strong>Start with low-complexity pages:</strong>
-   <code>bash
-   # Edit your .env to point to test MediaWiki
-   python azure_devops_migrator.py</code></p>
-</li>
-<li>
-<p><strong>If you want to test specific pages first:</strong></p>
-</li>
-<li>Modify the migration script to filter pages</li>
-<li>Or manually test with content previewer first</li>
-</ol>
-<h3>Step 3.2: Verify Test Results</h3>
-<ol>
-<li><strong>Check migrated content:</strong></li>
-<li>Visit your test MediaWiki</li>
-<li>Navigate to migrated pages</li>
-<li>
-<p>Verify formatting looks correct</p>
-</li>
-<li>
-<p><strong>Common issues to check:</strong></p>
-</li>
-<li>Are headers formatted correctly?</li>
-<li>Do tables display properly?</li>
-<li>Are code blocks highlighted?</li>
-<li>
-<p>Do internal links work?</p>
-</li>
-<li>
-<p><strong>Document any issues:</strong></p>
-</li>
-<li>Note pages that need manual adjustment</li>
-<li>Identify patterns in conversion problems</li>
-</ol>
-<h3>Step 3.3: Handle Images and Attachments</h3>
-<ol>
-<li><strong>Download images from Azure DevOps:</strong></li>
-<li>This must be done manually (Azure DevOps API limitation)</li>
-<li>Save images to your <code>assets/images/</code> directory</li>
-<li>
-<p>Note the original URLs for link replacement</p>
-</li>
-<li>
-<p><strong>Upload images to MediaWiki:</strong>
-   <code>bash
-   # Use MediaWiki's Special:Upload or bulk upload tools
-   # Document new image URLs for link updates</code></p>
-</li>
-<li>
-<p><strong>Update image references:</strong></p>
-</li>
-<li>Find pages with broken image links</li>
-<li>Replace with new MediaWiki image URLs</li>
-<li>Test that images display correctly</li>
-</ol>
-<p>✅ <strong>Phase 3 Checkpoint</strong>: You've successfully tested the migration process and resolved any major issues.</p>
-<hr />
-<h2>🎯 Phase 4: Production Migration (1-4 hours)</h2>
-<h3>Step 4.1: Prepare Production Environment</h3>
-<ol>
-<li><strong>Back up your current MediaWiki</strong> (if existing):
-   ```bash
-   # Database backup
-   mysqldump -u username -p wiki_db &gt; mediawiki_backup.sql</li>
-</ol>
-<p># Files backup
-   tar -czf mediawiki_files_backup.tar.gz /path/to/mediawiki/
-   ```</p>
-<ol>
-<li><strong>Update .env for production:</strong></li>
-<li>Change WIKI_URL to production MediaWiki</li>
-<li>Use production credentials</li>
-<li>Double-check all settings</li>
-</ol>
-<h3>Step 4.2: Execute Full Migration</h3>
-<ol>
-<li>
-<p><strong>Run the complete migration:</strong>
-   <code>bash
-   python azure_devops_migrator.py &gt; migration.log 2&gt;&amp;1</code></p>
-</li>
-<li>
-<p><strong>Monitor progress:</strong></p>
-</li>
-<li>Watch the console output</li>
-<li>Check <code>migration.log</code> if any errors occur</li>
-<li>
-<p>Note pages that fail to migrate</p>
-</li>
-<li>
-<p><strong>Handle failed pages:</strong></p>
-</li>
-<li>Review failed pages manually</li>
-<li>Often caused by special characters in titles</li>
-<li>May need manual creation with sanitized titles</li>
-</ol>
-<h3>Step 4.3: Post-Migration Content Review</h3>
-<ol>
-<li><strong>Review high-complexity pages:</strong></li>
-<li>Visit each page identified in your analysis</li>
-<li>Verify tables, code blocks, and formatting</li>
-<li>
-<p>Fix any issues manually</p>
-</li>
-<li>
-<p><strong>Update internal links:</strong></p>
-</li>
-<li>Search for broken internal links</li>
-<li>Update page references if page titles changed</li>
-<li>
-<p>Consider creating redirect pages for old URLs</p>
-</li>
-<li>
-<p><strong>Upload remaining images:</strong></p>
-</li>
-<li>Complete image uploads started in testing phase</li>
-<li>Update all image references in migrated content</li>
-<li>Verify all images display correctly</li>
-</ol>
-<p>✅ <strong>Phase 4 Checkpoint</strong>: Your complete wiki has been migrated to MediaWiki.</p>
-<hr />
-<h2>✅ Phase 5: Validation &amp; Cleanup (30-60 minutes)</h2>
-<h3>Step 5.1: Content Validation</h3>
-<ol>
-<li><strong>Spot-check migrated content:</strong></li>
-<li>Review a sample of pages from each complexity level</li>
-<li>Verify formatting, links, and functionality</li>
-<li>
-<p>Test search functionality</p>
-</li>
-<li>
-<p><strong>Run validation script</strong> (if available):
-   <code>bash
-   python ../monitoring/wiki_health_check.py  # Coming soon</code></p>
-</li>
-</ol>
-<h3>Step 5.2: User Access Setup</h3>
-<ol>
-<li><strong>Configure user accounts:</strong></li>
-<li>Import user accounts or set up new ones</li>
-<li>Configure user groups and permissions</li>
-<li>
-<p>Test user access and editing capabilities</p>
-</li>
-<li>
-<p><strong>Set up authentication:</strong></p>
-</li>
-<li>Configure SSO if needed</li>
-<li>Set up user groups matching your organization</li>
-<li>Test login and permissions</li>
-</ol>
-<h3>Step 5.3: Final Documentation</h3>
-<ol>
-<li><strong>Create user migration guide:</strong></li>
-<li>Document key differences between Azure DevOps wiki and MediaWiki</li>
-<li>Provide editing guidelines</li>
-<li>
-<p>Share new wiki URL and access instructions</p>
-</li>
-<li>
-<p><strong>Document any manual changes:</strong></p>
-</li>
-<li>List pages that needed manual adjustment</li>
-<li>Note any ongoing maintenance requirements</li>
-<li>Create troubleshooting guide for common issues</li>
-</ol>
-<p>✅ <strong>Phase 5 Checkpoint</strong>: Migration complete and validated!</p>
-<hr />
-<h2>🎉 Phase 6: Go-Live &amp; Support (Ongoing)</h2>
-<h3>Step 6.1: Announce the Migration</h3>
-<ol>
-<li><strong>Communicate to stakeholders:</strong></li>
-<li>Send announcement with new wiki URL</li>
-<li>Provide basic usage instructions</li>
-<li>
-<p>Share timeline for Azure DevOps wiki shutdown (if applicable)</p>
-</li>
-<li>
-<p><strong>Provide training if needed:</strong></p>
-</li>
-<li>MediaWiki editing differences</li>
-<li>New search and navigation features</li>
-<li>How to create and edit pages</li>
-</ol>
-<h3>Step 6.2: Monitor and Support</h3>
-<ol>
-<li><strong>Monitor usage:</strong></li>
-<li>Watch for user issues or confusion</li>
-<li>Check wiki performance and availability</li>
-<li>
-<p>Monitor search functionality</p>
-</li>
-<li>
-<p><strong>Ongoing maintenance:</strong></p>
-</li>
-<li>Regular backups</li>
-<li>MediaWiki updates</li>
-<li>User account management</li>
-</ol>
-<hr />
-<h2>🚨 Common Issues &amp; Troubleshooting</h2>
-<h3>Authentication Issues</h3>
-<p><strong>Problem</strong>: Cannot connect to Azure DevOps or MediaWiki
-<strong>Solutions</strong>:
-- Verify Personal Access Token has correct permissions
-- Check if MediaWiki API is enabled
-- For SSO: Use bot passwords or API tokens
-- Test API access manually with curl</p>
-<h3>Content Conversion Issues</h3>
-<p><strong>Problem</strong>: Tables or formatting look wrong
-<strong>Solutions</strong>:
-- Check MediaWiki extensions are installed
-- Verify table syntax conversion
-- May need manual adjustment for complex tables</p>
-<p><strong>Problem</strong>: Code blocks not highlighted
-<strong>Solutions</strong>:
-- Install SyntaxHighlight_GeSHi extension
-- Check language names in code blocks
-- May need to update language identifiers</p>
-<h3>Performance Issues</h3>
-<p><strong>Problem</strong>: Migration is very slow
-<strong>Solutions</strong>:
-- Add delays between requests
-- Process pages in smaller batches
-- Check network connectivity and API rate limits</p>
-<h3>Image Issues</h3>
-<p><strong>Problem</strong>: Images not displaying
-<strong>Solutions</strong>:
-- Images must be uploaded manually to MediaWiki
-- Update image URLs in page content after upload
-- Check MediaWiki upload permissions</p>
-<hr />
-<h2>📊 Success Metrics</h2>
-<p>After migration, you should have:
-- ✅ All pages migrated with acceptable formatting
-- ✅ Internal links working correctly
-- ✅ Images and attachments accessible
-- ✅ Users able to access and edit content
-- ✅ Search functionality working
-- ✅ Backup and recovery procedures in place</p>
-<hr />
-<h2>🔗 Additional Resources</h2>
-<ul>
-<li><strong>MediaWiki Documentation</strong>: https://www.mediawiki.org/wiki/Documentation</li>
-<li><strong>Migration Tools Repository</strong>: https://github.com/development-toolbox/development-toolbox-mediawiki-tools</li>
-<li><strong>Azure DevOps Wiki API</strong>: https://docs.microsoft.com/en-us/rest/api/azure/devops/wiki/</li>
-</ul>
-<hr />
-<h2>📞 Getting Help</h2>
-<p>If you encounter issues during migration:</p>
-<ol>
-<li><strong>Check the troubleshooting section</strong> above</li>
-<li><strong>Review generated reports</strong> for specific guidance</li>
-<li><strong>Test individual components</strong> to isolate issues</li>
-<li><strong>Use the preview tools</strong> to understand conversion behavior</li>
-<li><strong>Create GitHub issues</strong> in the tools repository for bugs</li>
-</ol>
-<p><strong>Remember</strong>: Take your time, test thoroughly, and don't hesitate to run additional previews if something doesn't look right!</p>
-<hr />
-<p><em>This guide is part of the development-toolbox-mediawiki-tools project</em></p>
+    <div class="ant-layout">
+        <header class="ant-layout-header">
+            <div>
+                <h3 class="ant-typography" style="margin: 0; color: var(--primary-color);">🚀 MediaWiki Migration Tools</h3>
+            </div>
+            <a href="index.html" class="ant-btn">🏠 Back to Overview</a>
+        </header>
+
+        <main class="ant-layout-content">
+            <div class="container">
+                <div class="ant-card">
+                    <div class="ant-card-body">
+                        <div class="ant-typography">
+                            <h1>Complete Azure DevOps to MediaWiki Migration Guide</h1>
+                            <p class="text-secondary">This guide walks you through the entire process of migrating your Azure DevOps wiki to MediaWiki, from initial planning to final validation.</p>
+                        </div>
+
+                        <div class="ant-alert ant-alert-info">
+                            <div class="ant-alert-message">Guide Details</div>
+                            <p><strong>Estimated Time</strong>: 2-8 hours (depending on wiki size and complexity)<br>
+                            <strong>Difficulty</strong>: Intermediate<br>
+                            <strong>Prerequisites</strong>: Basic command line knowledge, admin access to both systems</p>
+                        </div>
+
+                        <h2 class="ant-typography">📋 Phase 1: Pre-Migration Planning (30-60 minutes)</h2>
+                        <h3 class="ant-typography">Step 1.1: Set Up Your Migration Environment</h3>
+                        <ol>
+                            <li><strong>Clone the migration tools repository:</strong>
+                                <div class="code-block"><code>git clone https://github.com/development-toolbox/development-toolbox-mediawiki-tools.git<br>cd development-toolbox-mediawiki-tools</code></div>
+                            </li>
+                            <li><strong>Set up Python environment:</strong>
+                                <div class="code-block"><code># Install dependencies<br>cd migration<br>pip install -r requirements.txt</code></div>
+                            </li>
+                            <li><strong>Configure your environment:</strong>
+                                <div class="code-block"><code># Copy environment template<br>cp .env.template .env<br><br># Edit .env with your credentials<br>notepad .env  # Windows<br>nano .env     # Linux/Mac</code></div>
+                            </li>
+                            <li><strong>Required credentials:</strong>
+                                <ul>
+                                    <li><strong>Azure DevOps PAT</strong>: Go to Azure DevOps → Settings → Personal Access Tokens → New Token. Scopes needed: <code>Wiki (Read)</code></li>
+                                    <li><strong>MediaWiki credentials</strong>: Admin user with page creation permissions</li>
+                                </ul>
+                            </li>
+                        </ol>
+
+                        <h3 class="ant-typography">Step 1.2: Analyze Your Current Wiki</h3>
+                        <ol>
+                            <li><strong>Run the pre-migration analysis:</strong>
+                                <div class="code-block"><code>python migration_planner.py</code></div>
+                            </li>
+                            <li><strong>Review the generated report:</strong> Open <code>migration_analysis_report.md</code> and note pages requiring special attention, estimate time, and identify manual work.</li>
+                            <li><strong>Key things to look for:</strong> Pages with high complexity, number of images/attachments, pages with tables or HTML, and internal links.</li>
+                        </ol>
+
+                        <h3 class="ant-typography">Step 1.3: Preview Content Conversion</h3>
+                        <ol>
+                            <li><strong>Run content preview tool:</strong>
+                                <div class="code-block"><code>python content_previewer.py</code></div>
+                            </li>
+                            <li><strong>Review the preview report:</strong> Open <code>content_preview_report.md</code> to check if the conversion is acceptable.</li>
+                        </ol>
+                        <div class="ant-alert ant-alert-success">✅ <strong>Phase 1 Checkpoint</strong>: You should now have a clear understanding of your migration scope and complexity.</div>
+
+                        <h2 class="ant-typography">🛠️ Phase 2: MediaWiki Preparation (30-45 minutes)</h2>
+                        <h3 class="ant-typography">Step 2.1: Set Up MediaWiki Test Environment</h3>
+                        <p>Use Docker (Recommended for testing) or an existing MediaWiki instance. For Docker:</p>
+                        <div class="code-block"><code>cd ../examples<br>docker-compose up -d<br># MediaWiki will be available at http://localhost:8080</code></div>
+
+                        <h3 class="ant-typography">Step 2.2: Configure MediaWiki</h3>
+                        <p>Enable extensions like <code>SyntaxHighlight_GeSHi</code>, <code>ParserFunctions</code>, and <code>WikiEditor</code>. Test basic functionality by creating a test page.</p>
+
+                        <h3 class="ant-typography">Step 2.3: Prepare for Images and Attachments</h3>
+                        <p>Create directories for assets and plan your image handling strategy (e.g., which images to migrate, optimization).</p>
+                        <div class="code-block"><code>mkdir -p ../assets/images<br>mkdir -p ../assets/attachments</code></div>
+                        <div class="ant-alert ant-alert-success">✅ <strong>Phase 2 Checkpoint</strong>: Your MediaWiki is ready and you have a plan for handling multimedia content.</div>
+
+                        <h2 class="ant-typography">🚀 Phase 3: Test Migration (45-90 minutes)</h2>
+                        <p>Run a small test migration with low-complexity pages, verify the results on your test MediaWiki, and document any issues. Handle images and attachments by downloading them from Azure DevOps and uploading them to MediaWiki, then updating the links.</p>
+                        <div class="ant-alert ant-alert-success">✅ <strong>Phase 3 Checkpoint</strong>: You've successfully tested the migration process and resolved any major issues.</div>
+
+                        <h2 class="ant-typography">🎯 Phase 4: Production Migration (1-4 hours)</h2>
+                        <p>Back up your production MediaWiki, update your <code>.env</code> file with production credentials, and run the full migration. Monitor the process and handle any failed pages. Conduct a post-migration review of complex pages and update all internal and image links.</p>
+                        <div class="code-block"><code>python azure_devops_migrator.py > migration.log 2>&1</code></div>
+                        <div class="ant-alert ant-alert-success">✅ <strong>Phase 4 Checkpoint</strong>: Your complete wiki has been migrated to MediaWiki.</div>
+
+                        <h2 class="ant-typography">✅ Phase 5: Validation & Cleanup (30-60 minutes)</h2>
+                        <p>Spot-check migrated content, set up user accounts and permissions, and create documentation for your users about the new wiki and any changes.</p>
+                        <div class="ant-alert ant-alert-success">✅ <strong>Phase 5 Checkpoint</strong>: Migration complete and validated!</div>
+
+                        <h2 class="ant-typography">🎉 Phase 6: Go-Live & Support (Ongoing)</h2>
+                        <p>Announce the migration to stakeholders, provide training if necessary, and establish a process for ongoing monitoring and support.</p>
+
+                        <h2 class="ant-typography">🚨 Common Issues & Troubleshooting</h2>
+                        <div class="ant-alert ant-alert-error">
+                            <div class="ant-alert-message">Troubleshooting Tips</div>
+                            <ul>
+                                <li><strong>Authentication Issues</strong>: Verify PAT permissions and API access. Use bot passwords for SSO.</li>
+                                <li><strong>Content Conversion Issues</strong>: Ensure required MediaWiki extensions are installed. Complex tables may need manual adjustment.</li>
+                                <li><strong>Performance Issues</strong>: Add delays between requests or process in batches to avoid rate limiting.</li>
+                                <li><strong>Image Issues</strong>: Images must be uploaded manually to MediaWiki, and links updated accordingly.</li>
+                            </ul>
+                        </div>
+
+                        <h2 class="ant-typography">🔗 Additional Resources</h2>
+                        <ul>
+                            <li><a href="https://www.mediawiki.org/wiki/Documentation" target="_blank">MediaWiki Documentation</a></li>
+                            <li><a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools" target="_blank">Migration Tools Repository</a></li>
+                            <li><a href="https://docs.microsoft.com/en-us/rest/api/azure/devops/wiki/" target="_blank">Azure DevOps Wiki API</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="ant-layout-footer">
+            MediaWiki Migration Tools ©2024 Created by Development Toolbox
+        </footer>
+    </div>
 </body>
 </html>
