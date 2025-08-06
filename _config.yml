@@ -1,0 +1,58 @@
+name: MediaWiki Migration Tools Documentation
+description: Complete toolkit for migrating from Azure DevOps Wiki to MediaWiki
+title: MediaWiki Migration Tools
+url: https://development-toolbox.github.io/development-toolbox-mediawiki-tools
+baseurl: /development-toolbox-mediawiki-tools
+
+# GitHub Pages settings
+theme: null
+plugins:
+  - jekyll-sitemap
+  - jekyll-feed
+
+# Site settings
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Collections
+collections:
+  tools:
+    output: true
+    permalink: /:collection/:name/
+
+# Navigation
+navigation:
+  - title: Home
+    url: /
+  - title: Tools
+    url: /#tools
+  - title: Getting Started
+    url: /#getting-started
+  - title: Examples
+    url: /#examples
+  - title: GitHub
+    url: https://github.com/development-toolbox/development-toolbox-mediawiki-tools
+
+# Social
+github_username: development-toolbox
+repository: development-toolbox/development-toolbox-mediawiki-tools
+
+# Exclude from processing
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+  - node_modules/
+  - migration/
+  - templates/
+  - examples/
+  - .github/
+
+# Include files
+include:
+  - _pages
+  - docs/

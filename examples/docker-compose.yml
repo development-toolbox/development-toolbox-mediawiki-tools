@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mediawiki:
+    image: mediawiki:1.39
+    ports:
+      - "8080:80"
+    environment:
+      - MEDIAWIKI_DB_TYPE=mysql
+      - MEDIAWIKI_DB_HOST=db
+      - MEDIAWIKI_DB_NAME=mediawiki
+      - MEDIAWIKI_DB_USER=root
+      - MEDIAWIKI_DB_PASSWORD=password
+    volumes:
+      - mediawiki_data:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=mediawiki
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  mediawiki_data:
+  db_data:

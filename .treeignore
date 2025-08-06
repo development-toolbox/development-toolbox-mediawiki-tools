@@ -1,0 +1,10 @@
+# .treeignore example
+__pycache__
+*.pyc
+.git
+node_modules
+.DS_Store
+.env
+*.log
+.venv/
+.venv/*

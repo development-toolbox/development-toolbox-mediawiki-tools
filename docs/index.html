@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaWiki Migration Tools - Developer Guide</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #1e293b;
+            --light-bg: #f8fafc;
+            --text-dark: #334155;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--dark-bg);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        nav a:hover, nav a.active {
+            background-color: var(--primary-color);
+        }
+
+        /* Main Content */
+        main {
+            padding: 2rem 0;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-content {
+            padding: 2rem;
+        }
+
+        /* Cards */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* Code Blocks */
+        .code-example {
+            background: var(--dark-bg);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: #374151;
+            padding: 0.75rem 1rem;
+            color: white;
+            font-weight: 600;
+            border-bottom: 1px solid #4b5563;
+        }
+
+        pre {
+            margin: 0 !important;
+            background: var(--dark-bg) !important;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin: 0.25rem;
+        }
+
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-info { background: #dbeafe; color: #1e40af; }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            border-color: var(--primary-color);
+            color: #1e40af;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            border-color: var(--warning-color);
+            color: #92400e;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            border-color: var(--success-color);
+            color: #166534;
+        }
+
+        /* Steps */
+        .steps {
+            counter-reset: step-counter;
+        }
+
+        .step {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .step::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--primary-color);
+            color: white;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .step h3 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+        }
+
+        /* Utility Classes */
+        .text-center { text-align: center; }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .font-bold { font-weight: 700; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🚀 MediaWiki Migration Tools</h1>
+            <p>Complete toolkit for migrating from Azure DevOps Wiki to MediaWiki</p>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul>
+                <li><a href="#overview" class="nav-link">Overview</a></li>
+                <li><a href="#tools" class="nav-link">Tools</a></li>
+                <li><a href="#getting-started" class="nav-link">Getting Started</a></li>
+                <li><a href="#examples" class="nav-link">Examples</a></li>
+                <li><a href="#troubleshooting" class="nav-link">Troubleshooting</a></li>
+                <li><a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <!-- Overview Section -->
+            <section id="overview" class="section">
+                <div class="section-header">
+                    <h2>📋 Overview</h2>
+                    <p>Everything you need to migrate your Azure DevOps Wiki to MediaWiki</p>
+                </div>
+                <div class="section-content">
+                    <div class="alert alert-info">
+                        <strong>🎯 Goal:</strong> Seamlessly migrate your Azure DevOps wiki content to MediaWiki while preserving formatting, structure, and functionality.
+                    </div>
+
+                    <div class="cards">
+                        <div class="card">
+                            <span class="card-icon">📊</span>
+                            <h3>Analysis Tools</h3>
+                            <p>Analyze your wiki content complexity and get migration time estimates before starting.</p>
+                            <div class="mt-2">
+                                <span class="badge badge-success">migration_planner.py</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <span class="card-icon">🔄</span>
+                            <h3>Migration Engine</h3>
+                            <p>Automated migration with intelligent content conversion and error handling.</p>
+                            <div class="mt-2">
+                                <span class="badge badge-success">azure_devops_migrator.py</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <span class="card-icon">👁️</span>
+                            <h3>Preview Tools</h3>
+                            <p>Preview how your content will look in MediaWiki before migrating.</p>
+                            <div class="mt-2">
+                                <span class="badge badge-success">content_previewer.py</span>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <span class="card-icon">📚</span>
+                            <h3>Template Management</h3>
+                            <p>Import and manage MediaWiki templates for consistent formatting.</p>
+                            <div class="mt-2">
+                                <span class="badge badge-success">mediawiki_import.py</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 class="mt-2 mb-1">🔧 What Gets Migrated</h3>
+                    <div class="cards">
+                        <div class="card">
+                            <h3>✅ Automatic Conversion</h3>
+                            <ul>
+                                <li>Headers and text formatting</li>
+                                <li>Lists (ordered and unordered)</li>
+                                <li>Links (internal and external)</li>
+                                <li>Code blocks with syntax highlighting</li>
+                                <li>Tables (basic formatting)</li>
+                                <li>Basic HTML elements</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <h3>⚠️ Manual Review Required</h3>
+                            <ul>
+                                <li>Images and attachments</li>
+                                <li>Complex table formatting</li>
+                                <li>Custom HTML/CSS</li>
+                                <li>Footnotes and references</li>
+                                <li>Task lists</li>
+                                <li>Embedded media</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tools Section -->
+            <section id="tools" class="section">
+                <div class="section-header">
+                    <h2>🛠️ Migration Tools</h2>
+                    <p>Complete suite of tools for every step of the migration process</p>
+                </div>
+                <div class="section-content">
+                    <div class="cards">
+                        <div class="card">
+                            <h3>📊 Migration Planner</h3>
+                            <p><strong>File:</strong> <code>migration/migration_planner.py</code></p>
+                            <p>Analyzes your Azure DevOps wiki to assess migration complexity and estimate time requirements.</p>
+
+                            <h4 class="mt-2">Features:</h4>
+                            <ul>
+                                <li>Content complexity scoring</li>
+                                <li>Migration time estimation</li>
+                                <li>Risk assessment and recommendations</li>
+                                <li>Detailed analysis reports</li>
+                            </ul>
+
+                            <div class="code-example mt-2">
+                                <div class="code-header">Usage Example</div>
+                                <pre><code class="language-bash">python migration/migration_planner.py</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>🔄 Azure DevOps Migrator</h3>
+                            <p><strong>File:</strong> <code>migration/azure_devops_migrator.py</code></p>
+                            <p>Main migration engine that handles the conversion and transfer of content from Azure DevOps to MediaWiki.</p>
+
+                            <h4 class="mt-2">Features:</h4>
+                            <ul>
+                                <li>Automated content conversion</li>
+                                <li>Batch processing</li>
+                                <li>Error handling and recovery</li>
+                                <li>Progress tracking</li>
+                            </ul>
+
+                            <div class="code-example mt-2">
+                                <div class="code-header">Usage Example</div>
+                                <pre><code class="language-bash">python migration/azure_devops_migrator.py --wiki "ProjectDocs"</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>👁️ Content Previewer</h3>
+                            <p><strong>File:</strong> <code>migration/content_previewer.py</code></p>
+                            <p>Preview how your Azure DevOps content will appear in MediaWiki before performing the actual migration.</p>
+
+                            <h4 class="mt-2">Features:</h4>
+                            <ul>
+                                <li>Live conversion preview</li>
+                                <li>Issue identification</li>
+                                <li>Sample page generation</li>
+                                <li>Conversion accuracy testing</li>
+                            </ul>
+
+                            <div class="code-example mt-2">
+                                <div class="code-header">Usage Example</div>
+                                <pre><code class="language-bash">python migration/content_previewer.py --page "Getting Started"</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>📚 Template Importer</h3>
+                            <p><strong>File:</strong> <code>templates/mediawiki_import.py</code></p>
+                            <p>Bulk import and manage MediaWiki templates for consistent content formatting.</p>
+
+                            <h4 class="mt-2">Features:</h4>
+                            <ul>
+                                <li>Bulk template import</li>
+                                <li>Template validation</li>
+                                <li>Dependency management</li>
+                                <li>Version control</li>
+                            </ul>
+
+                            <div class="code-example mt-2">
+                                <div class="code-header">Usage Example</div>
+                                <pre><code class="language-bash">python templates/mediawiki_import.py --templates templates/</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Getting Started Section -->
+            <section id="getting-started" class="section">
+                <div class="section-header">
+                    <h2>🚀 Getting Started</h2>
+                    <p>Step-by-step guide to migrate your wiki in 6 phases</p>
+                </div>
+                <div class="section-content">
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Prerequisites:</strong> Ensure you have Python 3.7+, access to both Azure DevOps and MediaWiki, and proper API permissions.
+                    </div>
+
+                    <div class="steps">
+                        <div class="step">
+                            <h3>Phase 1: Environment Setup</h3>
+                            <p>Install dependencies and configure your environment.</p>
+
+                            <div class="code-example">
+                                <div class="code-header">Installation</div>
+                                <pre><code class="language-bash"># Clone the repository
+git clone https://github.com/development-toolbox/development-toolbox-mediawiki-tools.git
+cd development-toolbox-mediawiki-tools
+
+# Install dependencies
+pip install -r migration/requirements.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your credentials</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <h3>Phase 2: Analysis</h3>
+                            <p>Analyze your Azure DevOps wiki to understand migration complexity.</p>
+
+                            <div class="code-example">
+                                <div class="code-header">Run Analysis</div>
+                                <pre><code class="language-bash">python migration/migration_planner.py</code></pre>
+                            </div>
+
+                            <div class="alert alert-info">
+                                <strong>📄 Output:</strong> Creates <code>migration_analysis_report.md</code> with detailed recommendations.
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <h3>Phase 3: Environment Preparation</h3>
+                            <p>Set up your MediaWiki test environment and configure access.</p>
+
+                            <div class="code-example">
+                                <div class="code-header">Docker Setup (Optional)</div>
+                                <pre><code class="language-bash"># Start local MediaWiki for testing
+docker-compose up -d
+
+# Access at http://localhost:8080</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <h3>Phase 4: Content Preview</h3>
+                            <p>Preview how your content will convert before migration.</p>
+
+                            <div class="code-example">
+                                <div class="code-header">Preview Content</div>
+                                <pre><code class="language-bash"># Preview specific pages
+python migration/content_previewer.py --page "Home"
+
+# Generate sample conversions
+python migration/content_previewer.py --sample-pages 5</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <h3>Phase 5: Template Setup</h3>
+                            <p>Import necessary MediaWiki templates for consistent formatting.</p>
+
+                            <div class="code-example">
+                                <div class="code-header">Import Templates</div>
+                                <pre><code class="language-bash">python templates/mediawiki_import.py --import templates/</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="step">
+                            <h3>Phase 6: Migration Execution</h3>
+                            <p>Execute the migration with monitoring and validation.</p>
+
+                            <div class="code-example">
+                                <div class="code-header">Run Migration</div>
+                                <pre><code class="language-bash"># Start with a test batch
+python migration/azure_devops_migrator.py --wiki "ProjectDocs" --batch-size 10
+
+# Full migration
+python migration/azure_devops_migrator.py --wiki "ProjectDocs"</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-success">
+                        <strong>✅ Success!</strong> Your wiki has been migrated. Review the conversion quality checklist in the documentation.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Examples Section -->
+            <section id="examples" class="section">
+                <div class="section-header">
+                    <h2>📝 Conversion Examples</h2>
+                    <p>See how different content types convert from Azure DevOps to MediaWiki</p>
+                </div>
+                <div class="section-content">
+                    <div class="cards">
+                        <div class="card">
+                            <h3>Headers & Formatting</h3>
+                            <div class="code-example">
+                                <div class="code-header">Azure DevOps (Markdown)</div>
+                                <pre><code class="language-markdown"># Main Title
+## Section Title
+**Bold text** and *italic text*</code></pre>
+                            </div>
+                            <div class="code-example">
+                                <div class="code-header">MediaWiki (Converted)</div>
+                                <pre><code class="language-mediawiki">= Main Title =
+== Section Title ==
+'''Bold text''' and ''italic text''</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>Code Blocks</h3>
+                            <div class="code-example">
+                                <div class="code-header">Azure DevOps (Markdown)</div>
+                                <pre><code class="language-markdown">```python
+def hello_world():
+    print("Hello, World!")
+```</code></pre>
+                            </div>
+                            <div class="code-example">
+                                <div class="code-header">MediaWiki (Converted)</div>
+                                <pre><code class="language-mediawiki">&lt;syntaxhighlight lang="python"&gt;
+def hello_world():
+    print("Hello, World!")
+&lt;/syntaxhighlight&gt;</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>Tables</h3>
+                            <div class="code-example">
+                                <div class="code-header">Azure DevOps (Markdown)</div>
+                                <pre><code class="language-markdown">| Name | Role | Status |
+|------|------|--------|
+| John | Dev  | Active |</code></pre>
+                            </div>
+                            <div class="code-example">
+                                <div class="code-header">MediaWiki (Converted)</div>
+                                <pre><code class="language-mediawiki">{| class="wikitable"
+|-
+! Name !! Role !! Status
+|-
+| John || Dev || Active
+|}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>📖 More Examples:</strong> See the complete <a href="content-conversion-examples.md" target="_blank">Content Conversion Guide</a> and <a href="content_examples.md" target="_blank">Real-world Examples</a> for detailed conversion scenarios.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting Section -->
+            <section id="troubleshooting" class="section">
+                <div class="section-header">
+                    <h2>🛠️ Troubleshooting</h2>
+                    <p>Common issues and solutions</p>
+                </div>
+                <div class="section-content">
+                    <div class="cards">
+                        <div class="card">
+                            <h3>🚨 Authentication Issues</h3>
+                            <p><strong>Problem:</strong> Unable to connect to Azure DevOps or MediaWiki</p>
+                            <h4>Solutions:</h4>
+                            <ul>
+                                <li>Verify Personal Access Token has proper permissions</li>
+                                <li>Check MediaWiki API credentials</li>
+                                <li>Ensure network connectivity</li>
+                                <li>Validate .env file configuration</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <h3>📄 Content Conversion Errors</h3>
+                            <p><strong>Problem:</strong> Content not converting properly</p>
+                            <h4>Solutions:</h4>
+                            <ul>
+                                <li>Use content previewer to identify issues</li>
+                                <li>Check for unsupported HTML elements</li>
+                                <li>Validate markdown syntax in source</li>
+                                <li>Review complex table structures</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <h3>🖼️ Image Migration Issues</h3>
+                            <p><strong>Problem:</strong> Images not displaying correctly</p>
+                            <h4>Solutions:</h4>
+                            <ul>
+                                <li>Images require manual download/upload</li>
+                                <li>Update image references after upload</li>
+                                <li>Check MediaWiki file upload permissions</li>
+                                <li>Verify image file formats are supported</li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <h3>⚡ Performance Issues</h3>
+                            <p><strong>Problem:</strong> Migration taking too long</p>
+                            <h4>Solutions:</h4>
+                            <ul>
+                                <li>Use batch processing for large wikis</li>
+                                <li>Check API rate limits</li>
+                                <li>Optimize network connectivity</li>
+                                <li>Consider running during off-peak hours</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <strong>💡 Pro Tip:</strong> Always test with a small batch of pages first, and keep backups of your original content before migration.
+                    </div>
+
+                    <h3 class="mt-2">📞 Getting Help</h3>
+                    <div class="cards">
+                        <div class="card">
+                            <h3>📚 Documentation</h3>
+                            <ul>
+                                <li><a href="complete-migration-guide.md" target="_blank">Complete Migration Guide</a></li>
+                                <li><a href="content-conversion-examples.md" target="_blank">Conversion Examples</a></li>
+                                <li><a href="content_examples.md" target="_blank">Real-world Examples</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="card">
+                            <h3>🐛 Report Issues</h3>
+                            <ul>
+                                <li><a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools/issues" target="_blank">GitHub Issues</a></li>
+                                <li>Include error logs and environment details</li>
+                                <li>Provide sample content that failed to convert</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer style="background: var(--dark-bg); color: white; text-align: center; padding: 2rem 0; margin-top: 3rem;">
+        <div class="container">
+            <p>&copy; 2025 Development Toolbox Team. Licensed under MIT License.</p>
+            <p>
+                <a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools" target="_blank" style="color: var(--accent-color);">GitHub Repository</a> |
+                <a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools/wiki" target="_blank" style="color: var(--accent-color);">Wiki</a> |
+                <a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools/releases" target="_blank" style="color: var(--accent-color);">Releases</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+                    // Update active nav link
+                    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Update active nav link on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (scrollY >= sectionTop) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
