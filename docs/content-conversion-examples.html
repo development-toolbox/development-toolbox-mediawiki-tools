@@ -4,20 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Content Conversion Examples - MediaWiki Migration Tools</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
     <style>
+        /* Ant Design inspired CSS - GitHub Pages Compatible */
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --accent-color: #3b82f6;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-            --danger-color: #ef4444;
-            --dark-bg: #1e293b;
-            --light-bg: #f8fafc;
-            --text-dark: #334155;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
+            --primary-color: #1890ff;
+            --primary-hover: #40a9ff;
+            --primary-active: #0050b3;
+            --success-color: #52c41a;
+            --warning-color: #fa8c16;
+            --error-color: #f5222d;
+            --info-color: #1890ff;
+            --text-primary: rgba(0, 0, 0, 0.85);
+            --text-secondary: rgba(0, 0, 0, 0.65);
+            --border-color: #d9d9d9;
+            --border-radius: 6px;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            --bg-color: #ffffff;
+            --bg-light: #fafafa;
         }
 
         * {
@@ -27,228 +31,475 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.5715;
+            color: var(--text-primary);
+            background-color: var(--bg-color);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+        .layout {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 2rem 0;
-            text-align: center;
+        .header {
+            background: var(--bg-color);
+            padding: 0 24px;
+            border-bottom: 1px solid #f0f0f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
         }
 
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            font-weight: 700;
+        .main-layout {
+            display: flex;
+            padding: 24px;
+            flex: 1;
         }
 
-        nav {
-            background: var(--dark-bg);
-            padding: 1rem 0;
-            margin-bottom: 2rem;
+        .sidebar {
+            background: var(--bg-color);
+            border-radius: var(--border-radius);
+            margin-right: 24px;
+            width: 280px;
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+            padding: 24px;
         }
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+        .content {
+            flex: 1;
+            background: var(--bg-color);
+            padding: 32px;
+            border-radius: var(--border-radius);
         }
 
-        nav a:hover {
-            background-color: var(--primary-color);
-        }
-
-        main {
-            padding: 2rem 0;
-        }
-
-        .conversion-example {
-            margin-bottom: 3rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .example-header {
-            background: var(--light-bg);
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .example-header h2 {
-            color: var(--primary-color);
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .example-content {
-            padding: 2rem;
-        }
-
-        .comparison {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .before, .after {
-            background: var(--light-bg);
-            border-radius: 8px;
-            padding: 1.5rem;
-        }
-
-        .before h3 {
-            color: var(--warning-color);
-            margin-bottom: 1rem;
-        }
-
-        .after h3 {
-            color: var(--success-color);
-            margin-bottom: 1rem;
-        }
-
-        .code-block {
-            background: var(--dark-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-
-        .code-header {
-            background: #374151;
-            padding: 0.75rem 1rem;
-            color: white;
+        .title {
+            font-size: 24px;
             font-weight: 600;
-            border-bottom: 1px solid #4b5563;
+            margin: 0;
         }
 
-        pre {
-            margin: 0 !important;
-            background: var(--dark-bg) !important;
-            padding: 1rem !important;
+        .subtitle {
+            color: var(--text-secondary);
+            margin: 0;
         }
 
-        .badge {
+        .btn {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin: 0.25rem 0;
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .badge-success { background: #dcfce7; color: #166534; }
-        .badge-warning { background: #fef3c7; color: #92400e; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .card {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 500;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
 
         .alert {
-            padding: 1rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            border-left: 4px solid;
+            padding: 12px 16px;
+            border-radius: var(--border-radius);
+            margin-bottom: 16px;
+            border: 1px solid;
         }
 
         .alert-info {
-            background: #eff6ff;
-            border-color: var(--primary-color);
-            color: #1e40af;
+            background: #e6f7ff;
+            border-color: #91d5ff;
+            color: #0958d9;
         }
 
         .alert-warning {
-            background: #fffbeb;
-            border-color: var(--warning-color);
-            color: #92400e;
+            background: #fff7e6;
+            border-color: #ffd591;
+            color: #d46b08;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: var(--border-radius);
+            font-size: 12px;
+            border: 1px solid;
+            margin-left: 8px;
+        }
+
+        .tag-success {
+            background: #f6ffed;
+            color: #52c41a;
+            border-color: #b7eb8f;
+        }
+
+        .tag-warning {
+            background: #fff7e6;
+            color: #fa8c16;
+            border-color: #ffd591;
+        }
+
+        .tag-error {
+            background: #fff2f0;
+            color: #f5222d;
+            border-color: #ffccc7;
+        }
+
+        .code-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .code-block {
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: #fafafa;
+            padding: 8px 16px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        .code-header.input {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+
+        .code-header.output {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+
+        .code-content {
+            background: #f6f8fa;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            padding: 16px;
+            background: transparent;
+            font-size: 13px;
+            line-height: 1.45;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -12px;
+        }
+
+        .col {
+            padding: 0 12px;
+            margin-bottom: 16px;
+        }
+
+        .col-6 { width: 25%; }
+        .col-12 { width: 50%; }
+        .col-24 { width: 100%; }
+
+        .anchor-nav {
+            list-style: none;
+            padding: 0;
+        }
+
+        .anchor-nav li {
+            margin-bottom: 8px;
+        }
+
+        .anchor-nav a {
+            display: block;
+            padding: 8px 0;
+            color: var(--text-primary);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            padding-left: 16px;
+            margin-left: -16px;
+            transition: all 0.2s;
+        }
+
+        .anchor-nav a:hover,
+        .anchor-nav a.active {
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+
+        .divider {
+            border-top: 1px solid #f0f0f0;
+            margin: 24px 0;
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .important {
+            color: #fa8c16;
+            font-weight: 500;
         }
 
         @media (max-width: 768px) {
-            .comparison {
+            .code-comparison {
                 grid-template-columns: 1fr;
             }
 
-            header h1 {
-                font-size: 2rem;
+            .main-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 24px;
+                position: static;
+            }
+
+            .col-6, .col-12 {
+                width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>📝 Content Conversion Examples</h1>
-            <p>Comprehensive reference for Azure DevOps to MediaWiki syntax conversion</p>
-        </div>
-    </header>
+    <div class="layout">
+        <!-- Header -->
+        <header class="header">
+            <div>
+                <h3 class="title">📝 Content Conversion Examples</h3>
+                <p class="subtitle">Azure DevOps to MediaWiki syntax conversion guide</p>
+            </div>
+            <div>
+                <a class="btn btn-primary" href="index.html">← Back to Documentation</a>
+            </div>
+        </header>
 
-    <nav>
-        <div class="container">
-            <a href="index.html">← Back to Documentation</a>
-        </div>
-    </nav>
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h4 style="margin-bottom: 16px;">📋 Contents</h4>
+                <ul class="anchor-nav">
+                    <li><a href="#quick-tips" class="important">💡 Quick Tips</a></li>
+                    <li><a href="#best-practices" class="important">🎯 Best Practices</a></li>
+                    <li><a href="#text-formatting">🔤 Text Formatting</a></li>
+                    <li><a href="#headers-lists">📋 Headers & Lists</a></li>
+                    <li><a href="#code-blocks">💻 Code Blocks</a></li>
+                    <li><a href="#tables">📊 Tables</a></li>
+                    <li><a href="#links">🔗 Links</a></li>
+                    <li><a href="#images">🖼️ Images</a></li>
+                    <li><a href="#help-tools">🔄 Help & Tools</a></li>
+                </ul>
+            </aside>
 
-    <main>
-        <div class="container">
-            <!-- Basic Text Formatting -->
-            <div class="conversion-example">
-                <div class="example-header">
-                    <h2>🔤 Basic Text Formatting</h2>
-                    <p>Bold, italic, and inline code conversion</p>
-                    <span class="badge badge-success">100% Automated</span>
-                </div>
-                <div class="example-content">
-                    <div class="comparison">
-                        <div class="before">
-                            <h3>📝 Azure DevOps Markdown</h3>
-                            <div class="code-block">
-                                <div class="code-header">Input</div>
-                                <pre><code class="language-markdown">This is **bold text** and this is *italic text*.
+            <!-- Content -->
+            <main class="content">
+                <!-- Quick Tips Section -->
+                <section id="quick-tips">
+                    <h2>💡 Quick Tips & Essential Info</h2>
+                    <p class="text-secondary">Key things to know before starting your migration</p>
+
+                    <div class="row">
+                        <div class="col col-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4>🚀 Preview Before Migration</h4>
+                                    <p>Use the Content Previewer to see exactly how your content will convert:</p>
+                                    <code>python migration/content_previewer.py --page "PageName"</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col col-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4>⚡ Automation Levels</h4>
+                                    <div>
+                                        <div><span class="tag tag-success">100% Automated</span> - No manual work needed</div>
+                                        <div><span class="tag tag-warning">85% Automated</span> - Minor adjustments needed</div>
+                                        <div><span class="tag tag-error">Manual Required</span> - Significant manual work</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col col-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4>🖼️ Images = Manual Process</h4>
+                                    <p>Images must be downloaded from Azure DevOps and uploaded to MediaWiki manually. Plan extra time for image migration.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col col-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4>📊 Complex Tables</h4>
+                                    <p>Tables with merged cells or complex formatting may need manual adjustment. Test with sample pages first.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider"></div>
+
+                <!-- Best Practices Section -->
+                <section id="best-practices">
+                    <h2>🎯 Best Practices</h2>
+                    <p class="text-secondary">Follow these guidelines for smooth migration</p>
+
+                    <div class="row">
+                        <div class="col col-6">
+                            <div class="card">
+                                <div class="card-header">📝 Before Migration</div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Simplify complex HTML in Azure DevOps where possible</li>
+                                        <li>Standardize image references for easier replacement</li>
+                                        <li>Document custom formatting that needs special handling</li>
+                                        <li>Create a backup of your Azure DevOps content</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col col-6">
+                            <div class="card">
+                                <div class="card-header">🔄 During Migration</div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Test with a small batch of pages first</li>
+                                        <li>Migrate in batches to catch issues early</li>
+                                        <li>Keep track of manual changes needed for consistency</li>
+                                        <li>Verify each page after conversion</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col col-6">
+                            <div class="card">
+                                <div class="card-header">✅ After Migration</div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Create MediaWiki templates for common formatting</li>
+                                        <li>Train users on MediaWiki syntax differences</li>
+                                        <li>Set up style guidelines for future content</li>
+                                        <li>Monitor and fix any broken links</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col col-6">
+                            <div class="card">
+                                <div class="card-header">🔧 Quality Checklist</div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li>Headers display with correct hierarchy</li>
+                                        <li>Code blocks have syntax highlighting</li>
+                                        <li>Tables display properly</li>
+                                        <li>All links work correctly</li>
+                                        <li>Images are uploaded and referenced</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="divider"></div>
+
+                <!-- Text Formatting Section -->
+                <section id="text-formatting">
+                    <div class="card">
+                        <div class="card-header">
+                            🔤 Basic Text Formatting
+                            <span class="tag tag-success">100% Automated</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-secondary">Bold, italic, and inline code conversion</p>
+
+                            <div class="code-comparison">
+                                <div class="code-block">
+                                    <div class="code-header input">📝 Azure DevOps Markdown</div>
+                                    <div class="code-content">
+                                        <pre><code>This is **bold text** and this is *italic text*.
 
 Here's some `inline code` and ~~strikethrough text~~.
 
 > This is a blockquote with **bold** text inside.</code></pre>
-                            </div>
-                        </div>
-                        <div class="after">
-                            <h3>✅ MediaWiki Result</h3>
-                            <div class="code-block">
-                                <div class="code-header">Output</div>
-                                <pre><code class="language-mediawiki">This is '''bold text''' and this is ''italic text''.
+                                    </div>
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-header output">✅ MediaWiki Result</div>
+                                    <div class="code-content">
+                                        <pre><code>This is '''bold text''' and this is ''italic text''.
 
 Here's some &lt;code&gt;inline code&lt;/code&gt; and &lt;s&gt;strikethrough text&lt;/s&gt;.
 
 &lt;blockquote&gt;This is a blockquote with '''bold''' text inside.&lt;/blockquote&gt;</code></pre>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-            <!-- Headers -->
-            <div class="conversion-example">
-                <div class="example-header">
-                    <h2>📋 Headers and Lists</h2>
-                    <p>Header levels and list formatting conversion</p>
-                    <span class="badge badge-success">100% Automated</span>
-                </div>
-                <div class="example-content">
-                    <div class="comparison">
-                        <div class="before">
-                            <h3>📝 Azure DevOps Markdown</h3>
-                            <div class="code-block">
-                                <div class="code-header">Input</div>
-                                <pre><code class="language-markdown"># Main Title
+                </section>
+
+                <!-- Headers and Lists Section -->
+                <section id="headers-lists">
+                    <div class="card">
+                        <div class="card-header">
+                            📋 Headers and Lists
+                            <span class="tag tag-success">100% Automated</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-secondary">Header levels and list formatting conversion</p>
+
+                            <div class="code-comparison">
+                                <div class="code-block">
+                                    <div class="code-header input">📝 Azure DevOps Markdown</div>
+                                    <div class="code-content">
+                                        <pre><code># Main Title
 ## Section Header
 ### Subsection
 
@@ -261,13 +512,12 @@ Here's some &lt;code&gt;inline code&lt;/code&gt; and &lt;s&gt;strikethrough text
 2. Ordered list item 2
    1. Nested ordered item
    2. Another nested ordered item</code></pre>
-                            </div>
-                        </div>
-                        <div class="after">
-                            <h3>✅ MediaWiki Result</h3>
-                            <div class="code-block">
-                                <div class="code-header">Output</div>
-                                <pre><code class="language-mediawiki">= Main Title =
+                                    </div>
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-header output">✅ MediaWiki Result</div>
+                                    <div class="code-content">
+                                        <pre><code>= Main Title =
 == Section Header ==
 === Subsection ===
 
@@ -280,26 +530,28 @@ Here's some &lt;code&gt;inline code&lt;/code&gt; and &lt;s&gt;strikethrough text
 # Ordered list item 2
 ## Nested ordered item
 ## Another nested ordered item</code></pre>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Code Blocks -->
-            <div class="conversion-example">
-                <div class="example-header">
-                    <h2>💻 Code Blocks</h2>
-                    <p>Syntax highlighting and code block conversion</p>
-                    <span class="badge badge-success">95% Automated</span>
-                </div>
-                <div class="example-content">
-                    <div class="comparison">
-                        <div class="before">
-                            <h3>📝 Azure DevOps Markdown</h3>
-                            <div class="code-block">
-                                <div class="code-header">Input</div>
-                                <pre><code class="language-markdown">```python
+                <!-- Code Blocks Section -->
+                <section id="code-blocks">
+                    <div class="card">
+                        <div class="card-header">
+                            💻 Code Blocks
+                            <span class="tag tag-success">95% Automated</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-secondary">Syntax highlighting and code block conversion</p>
+
+                            <div class="code-comparison">
+                                <div class="code-block">
+                                    <div class="code-header input">📝 Azure DevOps Markdown</div>
+                                    <div class="code-content">
+                                        <pre><code>```python
 def migrate_content(source, target):
     """Migrate content from source to target."""
     for page in source.get_pages():
@@ -315,13 +567,12 @@ pip install -r requirements.txt
 # Run migration
 python azure_devops_migrator.py --wiki "MyWiki"
 ```</code></pre>
-                            </div>
-                        </div>
-                        <div class="after">
-                            <h3>✅ MediaWiki Result</h3>
-                            <div class="code-block">
-                                <div class="code-header">Output</div>
-                                <pre><code class="language-mediawiki">&lt;syntaxhighlight lang="python"&gt;
+                                    </div>
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-header output">✅ MediaWiki Result</div>
+                                    <div class="code-content">
+                                        <pre><code>&lt;syntaxhighlight lang="python"&gt;
 def migrate_content(source, target):
     """Migrate content from source to target."""
     for page in source.get_pages():
@@ -337,40 +588,42 @@ pip install -r requirements.txt
 # Run migration
 python azure_devops_migrator.py --wiki "MyWiki"
 &lt;/syntaxhighlight&gt;</code></pre>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Tables -->
-            <div class="conversion-example">
-                <div class="example-header">
-                    <h2>📊 Tables</h2>
-                    <p>Table formatting and structure conversion</p>
-                    <span class="badge badge-warning">85% Automated</span>
-                </div>
-                <div class="example-content">
-                    <div class="alert alert-warning">
-                        <strong>⚠️ Note:</strong> Complex table features like merged cells require manual adjustment.
-                    </div>
-                    <div class="comparison">
-                        <div class="before">
-                            <h3>📝 Azure DevOps Markdown</h3>
-                            <div class="code-block">
-                                <div class="code-header">Input</div>
-                                <pre><code class="language-markdown">| Tool | Purpose | Status | Documentation |
+                <!-- Tables Section -->
+                <section id="tables">
+                    <div class="card">
+                        <div class="card-header">
+                            📊 Tables
+                            <span class="tag tag-warning">85% Automated</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-secondary">Table formatting and structure conversion</p>
+
+                            <div class="alert alert-warning">
+                                <strong>⚠️ Note:</strong> Complex table features like merged cells require manual adjustment.
+                            </div>
+
+                            <div class="code-comparison">
+                                <div class="code-block">
+                                    <div class="code-header input">📝 Azure DevOps Markdown</div>
+                                    <div class="code-content">
+                                        <pre><code>| Tool | Purpose | Status | Documentation |
 |------|---------|--------|---------------|
 | Migration Planner | Analysis | ✅ Complete | [Guide](migration-guide.md) |
 | Content Previewer | Preview | ✅ Complete | [Guide](preview-guide.md) |
 | Template Importer | Templates | 🚧 In Progress | [Guide](template-guide.md) |</code></pre>
-                            </div>
-                        </div>
-                        <div class="after">
-                            <h3>✅ MediaWiki Result</h3>
-                            <div class="code-block">
-                                <div class="code-header">Output</div>
-                                <pre><code class="language-mediawiki">{| class="wikitable"
+                                    </div>
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-header output">✅ MediaWiki Result</div>
+                                    <div class="code-content">
+                                        <pre><code>{| class="wikitable"
 |-
 ! Tool !! Purpose !! Status !! Documentation
 |-
@@ -380,82 +633,86 @@ python azure_devops_migrator.py --wiki "MyWiki"
 |-
 | Template Importer || Templates || 🚧 In Progress || [[Template Guide]]
 |}</code></pre>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Links -->
-            <div class="conversion-example">
-                <div class="example-header">
-                    <h2>🔗 Links</h2>
-                    <p>Internal and external link conversion</p>
-                    <span class="badge badge-warning">80% Automated</span>
-                </div>
-                <div class="example-content">
-                    <div class="alert alert-info">
-                        <strong>💡 Tip:</strong> Internal links may need manual adjustment based on your MediaWiki structure.
-                    </div>
-                    <div class="comparison">
-                        <div class="before">
-                            <h3>📝 Azure DevOps Markdown</h3>
-                            <div class="code-block">
-                                <div class="code-header">Input</div>
-                                <pre><code class="language-markdown">[External link](https://github.com/development-toolbox)
+                <!-- Links Section -->
+                <section id="links">
+                    <div class="card">
+                        <div class="card-header">
+                            🔗 Links
+                            <span class="tag tag-warning">80% Automated</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-secondary">Internal and external link conversion</p>
+
+                            <div class="alert alert-info">
+                                <strong>ℹ️ Note:</strong> Internal links may need manual adjustment based on your MediaWiki structure.
+                            </div>
+
+                            <div class="code-comparison">
+                                <div class="code-block">
+                                    <div class="code-header input">📝 Azure DevOps Markdown</div>
+                                    <div class="code-content">
+                                        <pre><code>[External link](https://github.com/development-toolbox)
 
 [Internal wiki page](/wiki/Getting-Started)
 
 [Documentation page](./docs/setup.md)
 
 [Link with title](https://example.com "Visit Example Site")</code></pre>
-                            </div>
-                        </div>
-                        <div class="after">
-                            <h3>✅ MediaWiki Result</h3>
-                            <div class="code-block">
-                                <div class="code-header">Output</div>
-                                <pre><code class="language-mediawiki">[https://github.com/development-toolbox External link]
+                                    </div>
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-header output">✅ MediaWiki Result</div>
+                                    <div class="code-content">
+                                        <pre><code>[https://github.com/development-toolbox External link]
 
 [[Getting Started|Internal wiki page]]
 
 [[Setup|Documentation page]]
 
 [https://example.com Link with title]</code></pre>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <!-- Images -->
-            <div class="conversion-example">
-                <div class="example-header">
-                    <h2>�️ Images</h2>
-                    <p>Image references and attachments</p>
-                    <span class="badge badge-danger">Manual Process Required</span>
-                </div>
-                <div class="example-content">
-                    <div class="alert alert-warning">
-                        <strong>⚠️ Manual Process:</strong> Images must be downloaded from Azure DevOps and uploaded to MediaWiki manually.
-                    </div>
-                    <div class="comparison">
-                        <div class="before">
-                            <h3>📝 Azure DevOps Markdown</h3>
-                            <div class="code-block">
-                                <div class="code-header">Input</div>
-                                <pre><code class="language-markdown">![Architecture Diagram](/.attachments/architecture.png)
+                <!-- Images Section -->
+                <section id="images">
+                    <div class="card">
+                        <div class="card-header">
+                            🖼️ Images
+                            <span class="tag tag-error">Manual Process Required</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-secondary">Image references and attachments</p>
+
+                            <div class="alert alert-warning">
+                                <strong>⚠️ Important:</strong> Images must be downloaded from Azure DevOps and uploaded to MediaWiki manually.
+                            </div>
+
+                            <div class="code-comparison">
+                                <div class="code-block">
+                                    <div class="code-header input">📝 Azure DevOps Markdown</div>
+                                    <div class="code-content">
+                                        <pre><code>![Architecture Diagram](/.attachments/architecture.png)
 
 ![Workflow](/.attachments/workflow.jpg "Process Flow")
 
 &lt;img src="/.attachments/screenshot.png" alt="UI Screenshot" width="500"&gt;</code></pre>
-                            </div>
-                        </div>
-                        <div class="after">
-                            <h3>⚠️ Manual Conversion Required</h3>
-                            <div class="code-block">
-                                <div class="code-header">Steps Required</div>
-                                <pre><code class="language-bash"># 1. Download images from Azure DevOps
+                                    </div>
+                                </div>
+                                <div class="code-block">
+                                    <div class="code-header output">⚠️ Manual Conversion Required</div>
+                                    <div class="code-content">
+                                        <pre><code># 1. Download images from Azure DevOps
 curl -H "Authorization: Bearer YOUR_TOKEN" \
   "https://dev.azure.com/org/project/_apis/wiki/wikis/wiki/attachments?path=architecture.png" \
   -o architecture.png
@@ -466,20 +723,93 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 [[File:Architecture.png|Architecture Diagram]]
 [[File:Workflow.jpg|thumb|Process Flow]]
 [[File:Screenshot.png|500px|UI Screenshot]]</code></pre>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
+                </section>
 
-            <div class="alert alert-info">
-                <strong>🔄 Need Help?</strong> Use the Content Previewer tool to see exactly how your content will convert:
-                <br><code>python migration/content_previewer.py --page "YourPageName"</code>
-            </div>
+                <!-- Help & Tools Section -->
+                <section id="help-tools">
+                    <h2>🔄 Help & Tools</h2>
+                    <p class="text-secondary">Additional resources and tools to help with your migration</p>
+
+                    <div class="alert alert-info">
+                        <strong>🚀 Content Previewer:</strong> See exactly how your content will convert before migration:<br>
+                        <code>python migration/content_previewer.py --page "YourPageName"</code>
+                    </div>
+
+                    <div class="row">
+                        <div class="col col-12">
+                            <div class="card">
+                                <div class="card-header">📚 Documentation Links</div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li><a href="https://www.mediawiki.org/wiki/Help:Formatting" target="_blank">MediaWiki Syntax Reference</a></li>
+                                        <li><a href="https://docs.microsoft.com/en-us/azure/devops/project/wiki/markdown-guidance" target="_blank">Azure DevOps Markdown Guide</a></li>
+                                        <li><a href="https://www.mediawiki.org/wiki/Help:Tables" target="_blank">MediaWiki Table Help</a></li>
+                                        <li><a href="https://www.mediawiki.org/wiki/Extension:SyntaxHighlight" target="_blank">Syntax Highlighting Extensions</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col col-12">
+                            <div class="card">
+                                <div class="card-header">🛠️ Migration Tools</div>
+                                <div class="card-body">
+                                    <ul>
+                                        <li><code>migration_planner.py</code> - Analyze your content</li>
+                                        <li><code>content_previewer.py</code> - Preview conversions</li>
+                                        <li><code>azure_devops_migrator.py</code> - Run full migration</li>
+                                        <li><code>template_importer.py</code> - Import templates</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
-    </main>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+                    // Update active nav item
+                    document.querySelectorAll('.anchor-nav a').forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Update active nav on scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const scrollPos = window.scrollY + 100;
+
+            sections.forEach(section => {
+                const top = section.offsetTop;
+                const bottom = top + section.offsetHeight;
+                const id = section.getAttribute('id');
+                const navLink = document.querySelector(`.anchor-nav a[href="#${id}"]`);
+
+                if (scrollPos >= top && scrollPos <= bottom) {
+                    document.querySelectorAll('.anchor-nav a').forEach(a => a.classList.remove('active'));
+                    if (navLink) navLink.classList.add('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
