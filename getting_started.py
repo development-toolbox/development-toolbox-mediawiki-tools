@@ -14,14 +14,15 @@ from pathlib import Path
 def show_platform_info():
     """Show platform-specific information"""
     system = platform.system()
-    shell = os.environ.get('SHELL', os.environ.get('COMSPEC', 'unknown'))
+    shell = os.environ.get('SHELL') or os.environ.get('COMSPEC') or 'unknown'
 
     print(f"🖥️  Detected OS: {system} {platform.release()}")
     print(f"🐍 Python: {sys.version.split()[0]} ({sys.executable})")
     print(f"🐚 Shell: {Path(shell).name if shell != 'unknown' else 'unknown'}")
 
     # Detect if running in Git Bash on Windows
-    if system == "Windows" and ("bash" in shell.lower() or "MSYS" in os.environ.get('MSYSTEM', '')):
+    msystem = os.environ.get('MSYSTEM', '')
+    if system == "Windows" and ("bash" in shell.lower() or "MSYS" in msystem):
         print("💡 Git Bash Environment:")
         print("   • Excellent choice for cross-platform development!")
         print("   • Unix-like commands available")
@@ -68,14 +69,14 @@ TOOLKIT_PYTHON_EXECUTABLE={sys.executable}
 TOOLKIT_PYTHON_VERSION={sys.version.split()[0]}
 
 # Shell Configuration
-TOOLKIT_SHELL={os.environ.get('SHELL', os.environ.get('COMSPEC', 'unknown'))}
+TOOLKIT_SHELL={os.environ.get('SHELL') or os.environ.get('COMSPEC') or 'unknown'}
 TOOLKIT_OS={platform.system()}
 
 # Docker Configuration
 TOOLKIT_DOCKER_COMPOSE_CMD=auto
 
 # Git Configuration
-TOOLKIT_GIT_BASH={str("bash" in os.environ.get('SHELL', '').lower() or "MSYS" in os.environ.get('MSYSTEM', '')).lower()}
+TOOLKIT_GIT_BASH={str("bash" in (os.environ.get('SHELL') or '').lower() or "MSYS" in (os.environ.get('MSYSTEM') or '')).lower()}
 
 # Paths (customize these as needed)
 TOOLKIT_WORK_DIR={Path.cwd()}
@@ -85,13 +86,37 @@ TOOLKIT_EXAMPLES_DIR={Path.cwd() / 'examples'}
 """
 
     try:
-        with open(toolkit_env, 'w') as f:
+        # Check parent directory exists and is writable
+        parent_dir = toolkit_env.parent
+        if not parent_dir.exists():
+            parent_dir.mkdir(parents=True, exist_ok=True)
+            
+        # Check if we have write permissions
+        if parent_dir.exists() and not os.access(parent_dir, os.W_OK):
+            print(f"❌ No write permission to directory: {parent_dir}")
+            return False
+            
+        with open(toolkit_env, 'w', encoding='utf-8') as f:
             f.write(env_content)
+            f.flush()  # Ensure data is written
+            
         print("✅ Created toolkit environment file (.toolkit_env)")
         print("📝 You can customize settings in .toolkit_env if needed")
         return True
+        
+    except PermissionError:
+        print(f"❌ Permission denied: Cannot write to {toolkit_env}")
+        print("💡 Try running with administrator privileges or choose a different directory")
+        return False
+    except OSError as e:
+        if e.errno == 28:  # No space left on device
+            print("❌ Insufficient disk space to create toolkit environment file")
+        else:
+            print(f"❌ System error creating toolkit environment: {e}")
+        return False
     except Exception as e:
-        print(f"❌ Failed to create toolkit environment: {e}")
+        print(f"❌ Unexpected error creating toolkit environment: {e}")
+        print("💡 Please check file permissions and available disk space")
         return False
 
 def load_toolkit_environment():
@@ -102,14 +127,22 @@ def load_toolkit_environment():
 
     env_vars = {}
     try:
-        with open(toolkit_env) as f:
+        with open(toolkit_env, 'r', encoding='utf-8') as f:
             for line in f:
                 line = line.strip()
                 if line and not line.startswith('#') and '=' in line:
                     key, value = line.split('=', 1)
                     env_vars[key.strip()] = value.strip()
+                    
+    except FileNotFoundError:
+        print("ℹ️  No toolkit environment file found, using defaults")
+    except PermissionError:
+        print("⚠️  Permission denied reading toolkit environment file")
+    except UnicodeDecodeError:
+        print("⚠️  Toolkit environment file has invalid encoding, using defaults")
     except Exception as e:
         print(f"⚠️  Could not load toolkit environment: {e}")
+        print("💡 You can recreate the file by running the setup again")
 
     return env_vars
 
@@ -268,12 +301,40 @@ def setup_environment():
             return True
 
     try:
-        shutil.copy(env_template, env_file)
+        # Ensure destination directory exists
+        env_file.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Check source file exists and is readable
+        if not env_template.is_file():
+            print(f"❌ Template file not found: {env_template}")
+            return False
+            
+        # Check destination is writable
+        if env_file.parent.exists() and not os.access(env_file.parent, os.W_OK):
+            print(f"❌ No write permission to directory: {env_file.parent}")
+            return False
+            
+        shutil.copy2(env_template, env_file)  # copy2 preserves metadata
         print("✅ Environment template copied to migration/.env")
         print("📝 Please edit migration/.env with your credentials")
         return True
+        
+    except PermissionError:
+        print(f"❌ Permission denied: Cannot copy to {env_file}")
+        print("💡 Try running with appropriate permissions")
+        return False
+    except shutil.SameFileError:
+        print("⚠️  Source and destination are the same file")
+        return True  # File already exists in correct location
+    except OSError as e:
+        if e.errno == 28:  # No space left on device
+            print("❌ Insufficient disk space to copy environment template")
+        else:
+            print(f"❌ System error copying environment template: {e}")
+        return False
     except Exception as e:
-        print(f"❌ Failed to copy environment template: {e}")
+        print(f"❌ Unexpected error copying environment template: {e}")
+        print(f"💡 Try manually copying {env_template} to {env_file}")
         return False
 
 def run_analysis():
@@ -293,12 +354,27 @@ def run_analysis():
         return
 
     # Check if required variables are set
-    with open(env_file) as f:
-        content = f.read()
-        if "your_organization_here" in content or "your_token_here" in content:
-            print("❌ Please configure your credentials in migration/.env first")
-            print("📝 Edit the file and replace placeholder values with your actual credentials")
-            return
+    try:
+        with open(env_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+            if "your_organization_here" in content or "your_token_here" in content:
+                print("❌ Please configure your credentials in migration/.env first")
+                print("📝 Edit the file and replace placeholder values with your actual credentials")
+                return
+                
+    except FileNotFoundError:
+        print("❌ Environment file not found. Please run setup first.")
+        return
+    except PermissionError:
+        print("❌ Permission denied reading environment file")
+        return
+    except UnicodeDecodeError:
+        print("❌ Environment file has invalid encoding")
+        print("💡 Please recreate the .env file with UTF-8 encoding")
+        return
+    except Exception as e:
+        print(f"❌ Error reading environment file: {e}")
+        return
 
     try:
         print("🚀 Starting migration analysis...")
@@ -510,8 +586,21 @@ def handle_readme_files():
 def display_readme_content(readme_path):
     """Display README content with pagination"""
     try:
+        # Check file exists and is readable
+        if not readme_path.is_file():
+            print(f"❌ File not found: {readme_path}")
+            return
+            
+        if not os.access(readme_path, os.R_OK):
+            print(f"❌ No read permission for: {readme_path}")
+            return
+            
         with open(readme_path, 'r', encoding='utf-8') as f:
             content = f.read()
+            
+        if not content.strip():
+            print(f"ℹ️  File is empty: {readme_path}")
+            return
 
         print(f"\n📖 {readme_path.relative_to(Path('.'))}")
         print("=" * 60)
@@ -549,8 +638,18 @@ def display_readme_content(readme_path):
                 input("\n📄 Press Enter to continue...")
                 break
 
+    except FileNotFoundError:
+        print(f"❌ File not found: {readme_path}")
+    except PermissionError:
+        print(f"❌ Permission denied reading: {readme_path}")
+    except UnicodeDecodeError:
+        print(f"❌ Cannot decode file (invalid encoding): {readme_path}")
+        print("💡 File may not be a text file or uses unsupported encoding")
+    except OSError as e:
+        print(f"❌ System error reading file: {e}")
+        print(f"File location: {readme_path.absolute()}")
     except Exception as e:
-        print(f"❌ Error reading file: {e}")
+        print(f"❌ Unexpected error reading file: {e}")
         print(f"File location: {readme_path.absolute()}")
 
 def handle_help():
@@ -570,8 +669,9 @@ def handle_help():
     print()
 
     system = platform.system()
-    shell = os.environ.get('SHELL', os.environ.get('COMSPEC', 'unknown'))
-    is_git_bash = "bash" in shell.lower() or "MSYS" in os.environ.get('MSYSTEM', '')
+    shell = os.environ.get('SHELL') or os.environ.get('COMSPEC') or 'unknown'
+    msystem = os.environ.get('MSYSTEM', '')
+    is_git_bash = "bash" in shell.lower() or "MSYS" in msystem
 
     if system == "Windows" and is_git_bash:
         print("🚀 Git Bash on Windows:")

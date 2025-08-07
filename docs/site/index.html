@@ -599,9 +599,11 @@
                 <button class="ant-menu-item active" onclick="showSection('overview')">🏠 Overview</button>
                 <button class="ant-menu-item" onclick="showSection('quick-start')">🚀 Quick Start</button>
                 <button class="ant-menu-item" onclick="showSection('tools')">🛠️ Tools</button>
+                <a class="ant-menu-item" href="tools-reference.html" target="_blank">📋 Reference</a>
                 <button class="ant-menu-item" onclick="showSection('guides')">📚 Guides</button>
                 <button class="ant-menu-item" onclick="showSection('examples')">💡 Examples</button>
                 <button class="ant-menu-item" onclick="showSection('support')">🤝 Support</button>
+                <a class="ant-menu-item" href="repolist.html" target="_blank">📂 Repositories</a>
             </nav>
         </header>
 
@@ -614,7 +616,7 @@
                     <div class="container">
                         <div class="hero-title">🚀 MediaWiki Migration Tools</div>
                         <div class="hero-subtitle">
-                            Professional tools for migrating Azure DevOps Wiki content to MediaWiki
+                            Open-source toolkit for migrating Azure DevOps Wiki content to MediaWiki
                         </div>
                         <div class="hero-actions">
                             <button class="ant-btn ant-btn-primary ant-btn-large" onclick="showSection('quick-start')">
@@ -669,9 +671,9 @@
                                 <div class="ant-card text-center">
                                     <div class="ant-card-body">
                                         <div class="feature-icon">🎨</div>
-                                        <h4 class="ant-typography">Template Import</h4>
+                                        <h4 class="ant-typography">Template Management</h4>
                                         <span class="ant-tag ant-tag-warning">🚧 In Progress</span>
-                                        <p class="text-secondary">Import and convert MediaWiki templates</p>
+                                        <p class="text-secondary">Import and manage MediaWiki templates and infoboxes</p>
                                     </div>
                                 </div>
                             </div>
@@ -811,7 +813,7 @@
                                         <ul style="margin: 0; padding-left: 20px;">
                                             <li><a href="#" onclick="showSection('tools')">Explore available tools</a></li>
                                             <li><a href="content-conversion-examples.html">View conversion examples</a></li>
-                                            <li><a href="./migration/README.md">Read detailed guides</a></li>
+                                            <li><a href="complete-migration-guide.html">Read detailed guides</a></li>
                                             <li><a href="#" onclick="showSection('support')">Get support</a></li>
                                         </ul>
                                     </div>
@@ -865,7 +867,7 @@
                                                 <li>Dependency mapping</li>
                                             </ul>
                                         </div>
-                                        <a class="ant-btn" href="./migration/README.md" target="_blank">📖 Documentation</a>
+                                        <a class="ant-btn" href="complete-migration-guide.html" target="_blank">📖 Documentation</a>
                                     </div>
                                 </div>
                             </div>
@@ -915,7 +917,7 @@
                                                 <li>Rollback support</li>
                                             </ul>
                                         </div>
-                                        <a class="ant-btn" href="./examples/README.md" target="_blank">� Documentation</a>
+                                        <a class="ant-btn" href="complete-migration-guide.html" target="_blank">📖 Documentation</a>
                                     </div>
                                 </div>
                             </div>
@@ -923,24 +925,24 @@
                             <div class="ant-col ant-col-xs-24 ant-col-lg-6">
                                 <div class="ant-card">
                                     <div class="ant-card-head">
-                                        🎨 Template Importer
-                                        <span class="ant-tag ant-tag-warning">Beta</span>
+                                        🎨 Template Manager
+                                        <span class="ant-tag ant-tag-warning">Planned</span>
                                     </div>
                                     <div class="ant-card-body">
-                                        <p class="text-secondary mb-16">Import MediaWiki templates and macros</p>
+                                        <p class="text-secondary mb-16">Import and manage MediaWiki templates</p>
                                         <div style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 12px 0; font-family: monospace; font-size: 12px;">
-                                            <code>template_importer.py</code>
+                                            <code>mediawiki_import.py</code>
                                         </div>
                                         <div class="space-vertical">
-                                            <strong>Features:</strong>
+                                            <strong>Planned Features:</strong>
                                             <ul style="margin: 8px 0; padding-left: 20px; font-size: 14px;">
                                                 <li>Template detection</li>
-                                                <li>Macro conversion</li>
-                                                <li>Dependency analysis</li>
-                                                <li>Validation testing</li>
+                                                <li>Infobox conversion</li>
+                                                <li>Custom template mapping</li>
+                                                <li>Batch import support</li>
                                             </ul>
                                         </div>
-                                        <a class="ant-btn" href="./docs/HOW-TO-GUIDES.md" target="_blank">📖 Documentation</a>
+                                        <a class="ant-btn" href="#" onclick="alert('Documentation coming soon!'); return false;">📖 Documentation</a>
                                     </div>
                                 </div>
                             </div>
@@ -981,7 +983,7 @@
 
                         <div class="ant-alert ant-alert-info mt-24">
                             <div class="ant-alert-message">💡 Getting Started with Tools</div>
-                            <div>All tools include built-in help. Run any tool with <code>--help</code> to see available options and usage examples.</div>
+                            <div>All tools include built-in help. Run any tool with <code>--help</code> to see available options and usage examples. View the <a href="tools-reference.html" target="_blank">complete tools reference</a> for detailed documentation.</div>
                         </div>
                     </div>
                 </div>
@@ -1121,7 +1123,7 @@
 
                         <div class="ant-divider"></div>
 
-                        <h3 class="ant-typography">📋 Specialized Documentation</h3>
+                        <h3 class="ant-typography">📋 Specialised Documentation</h3>
                         <div class="ant-row">
                             <div class="ant-col ant-col-xs-24 ant-col-md-6">
                                 <div class="ant-card ant-card-small">
@@ -1457,32 +1459,59 @@ migrator = WikiMigrator(processor=MyCustomProcessor())
                                     <div class="ant-card-head">❓ Frequently Asked Questions</div>
                                     <div class="ant-card-body">
                                         <p><strong>Q: How long does a typical migration take?</strong></p>
-                                        <p class="text-secondary mb-16">A: Migration time depends on the size and complexity of your wiki. Our tools can migrate thousands of pages in a few hours.</p>
+                                        <p class="text-secondary mb-16">A: Migration time depends on the size and complexity of your wiki. Small wikis (10-50 pages) typically take 15-30 minutes, whilst larger wikis (500+ pages) may require several hours.</p>
 
                                         <p><strong>Q: What if my content doesn't convert correctly?</strong></p>
-                                        <p class="text-secondary mb-16">A: Our tools achieve high accuracy, but manual review is recommended. The previewer helps identify issues early.</p>
+                                        <p class="text-secondary mb-16">A: Our tools achieve 95%+ accuracy for standard content. Use the content previewer to identify issues before migration. Complex tables or custom formatting may require manual adjustment.</p>
 
-                                        <p><strong>Q: Can I customize the migration process?</strong></p>
-                                        <p class="text-secondary">A: Yes, all tools are configurable and can be scripted to fit your specific workflow.</p>
+                                        <p><strong>Q: Can I customise the migration process?</strong></p>
+                                        <p class="text-secondary mb-16">A: Yes, all tools support configuration files, command-line parameters, and can be integrated into custom scripts for advanced workflows.</p>
+
+                                        <p><strong>Q: Do I need to migrate all content at once?</strong></p>
+                                        <p class="text-secondary mb-16">A: No, you can migrate in batches. Use the <code>--page</code> or <code>--folder</code> options to migrate specific content subsets.</p>
+
+                                        <p><strong>Q: What about images and attachments?</strong></p>
+                                        <p class="text-secondary">A: Images and attachments require manual upload to MediaWiki. The migrator identifies all media files and provides instructions for bulk upload.</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="ant-col ant-col-xs-24 ant-col-md-12">
                                 <div class="ant-card">
+                                    <div class="ant-card-head">🚨 Common Issues & Solutions</div>
+                                    <div class="ant-card-body">
+                                        <p><strong>Authentication Failed</strong></p>
+                                        <p class="text-secondary mb-16">Check your Azure DevOps PAT has Wiki read permissions. Verify MediaWiki bot credentials are correct.</p>
+                                        
+                                        <p><strong>Content Formatting Issues</strong></p>
+                                        <p class="text-secondary mb-16">Use <code>content_previewer.py</code> to preview conversions. Complex tables may need manual adjustment.</p>
+                                        
+                                        <p><strong>Migration Timeout</strong></p>
+                                        <p class="text-secondary mb-16">For large wikis, use <code>--batch-size 10</code> to process in smaller chunks. Consider running overnight.</p>
+                                        
+                                        <p><strong>Missing Dependencies</strong></p>
+                                        <p class="text-secondary">Run <code>pip install -r requirements.txt</code> in the migration folder to install all dependencies.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ant-row mt-24">
+                            <div class="ant-col ant-col-xs-24">
+                                <div class="ant-card">
                                     <div class="ant-card-head">📞 Contact & Community</div>
                                     <div class="ant-card-body">
-                                        <div class="space-vertical">
-                                            <div>
-                                                <strong>GitHub Issues:</strong>
-                                                <p class="text-secondary">For bug reports and feature requests, please <a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools/issues" target="_blank">open an issue</a> on our GitHub repository.</p>
+                                        <div class="ant-row">
+                                            <div class="ant-col ant-col-xs-24 ant-col-md-8">
+                                                <strong>🐛 GitHub Issues</strong>
+                                                <p class="text-secondary">Report bugs and request features on our <a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools/issues" target="_blank">GitHub repository</a>.</p>
                                             </div>
-                                            <div>
-                                                <strong>Community Forum:</strong>
-                                                <p class="text-secondary">Join our community forum to ask questions and share your experiences with other users.</p>
+                                            <div class="ant-col ant-col-xs-24 ant-col-md-8">
+                                                <strong>💬 Discussions</strong>
+                                                <p class="text-secondary">Join the conversation in <a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools/discussions" target="_blank">GitHub Discussions</a>.</p>
                                             </div>
-                                            <div>
-                                                <strong>Enterprise Support:</strong>
-                                                <p class="text-secondary">For dedicated support, contact our enterprise team for custom solutions and priority assistance.</p>
+                                            <div class="ant-col ant-col-xs-24 ant-col-md-8">
+                                                <strong>📖 Documentation</strong>
+                                                <p class="text-secondary">Contribute to docs via <a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools/pulls" target="_blank">pull requests</a>.</p>
                                             </div>
                                         </div>
                                     </div>

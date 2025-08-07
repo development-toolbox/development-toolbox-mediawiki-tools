@@ -1,0 +1,31 @@
+# Test Dependencies for MediaWiki Migration Tools
+# Install with: pip install -r tests/requirements-test.txt
+
+# Core testing framework
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.1
+pytest-xdist>=3.3.1
+
+# HTTP mocking for API testing
+responses>=0.23.1
+requests-mock>=1.11.0
+
+# Environment and configuration mocking
+pytest-env>=0.8.2
+
+# Testing utilities
+freezegun>=1.2.2  # Time mocking
+parameterized>=0.9.0  # Parameterized tests
+
+# Coverage and reporting
+coverage>=7.3.0
+
+# Code quality (optional but recommended)
+flake8>=6.0.0
+mypy>=1.5.0
+
+# Include main project dependencies for testing
+-r ../requirements.txt
+-r ../migration/requirements.txt

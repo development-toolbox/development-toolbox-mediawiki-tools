@@ -9,6 +9,8 @@ import sys
 import json
 import re
 import base64
+import time
+import pickle
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from urllib.parse import quote
@@ -20,6 +22,48 @@ from dotenv import load_dotenv
 class AzureDevOpsWikiClient:
     """Client for Azure DevOps Wiki REST API"""
 
+    def _make_api_request(self, method: str, url: str, max_retries: int = 3, 
+                         backoff_factor: float = 1.0) -> Dict:
+        """
+        Make API request with retry logic and proper error handling.
+        """
+        for attempt in range(max_retries):
+            try:
+                if method.upper() == 'GET':
+                    response = self.session.get(url, timeout=30)
+                elif method.upper() == 'POST':
+                    response = self.session.post(url, timeout=30)
+                else:
+                    raise ValueError(f"Unsupported HTTP method: {method}")
+                    
+                response.raise_for_status()
+                return response.json()
+                
+            except requests.exceptions.Timeout:
+                if attempt == max_retries - 1:
+                    raise
+                wait_time = backoff_factor * (2 ** attempt)
+                print(f"⏳ Request timed out, retrying in {wait_time}s...")
+                time.sleep(wait_time)
+                
+            except requests.exceptions.ConnectionError:
+                if attempt == max_retries - 1:
+                    raise
+                wait_time = backoff_factor * (2 ** attempt)
+                print(f"⚠️  Connection error, retrying in {wait_time}s...")
+                time.sleep(wait_time)
+                
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:  # Rate limited
+                    retry_after = int(e.response.headers.get('Retry-After', 60))
+                    print(f"⏳ Rate limited, waiting {retry_after}s...")
+                    time.sleep(retry_after)
+                    continue
+                else:
+                    raise
+                    
+        return {}
+        
     def __init__(self, organization: str, project: str, personal_access_token: str):
         self.organization = organization
         self.project = project
@@ -32,29 +76,39 @@ class AzureDevOpsWikiClient:
         encoded_auth = base64.b64encode(auth_string.encode()).decode()
         self.session.headers.update({
             'Authorization': f'Basic {encoded_auth}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'User-Agent': 'MediaWiki-Migration-Tool/1.0'
         })
 
     def get_wikis(self) -> List[Dict]:
         """Get all wikis in the project"""
         url = f"{self.base_url}/wiki/wikis?api-version=7.0"
-        response = self.session.get(url)
-        response.raise_for_status()
-        return response.json().get('value', [])
+        try:
+            response = self._make_api_request('GET', url)
+            return response.get('value', [])
+        except requests.RequestException as e:
+            print(f"❌ Failed to retrieve wikis: {e}")
+            raise
 
     def get_wiki_pages(self, wiki_id: str) -> List[Dict]:
         """Get all pages in a wiki"""
         url = f"{self.base_url}/wiki/wikis/{wiki_id}/pages?api-version=7.0&recursionLevel=full"
-        response = self.session.get(url)
-        response.raise_for_status()
-        return response.json().get('value', [])
+        try:
+            response = self._make_api_request('GET', url)
+            return response.get('value', [])
+        except requests.RequestException as e:
+            print(f"❌ Failed to retrieve pages for wiki {wiki_id}: {e}")
+            raise
 
     def get_page_content(self, wiki_id: str, page_id: str) -> str:
         """Get the content of a specific page"""
         url = f"{self.base_url}/wiki/wikis/{wiki_id}/pages/{page_id}?api-version=7.0&includeContent=true"
-        response = self.session.get(url)
-        response.raise_for_status()
-        return response.json().get('content', '')
+        try:
+            response = self._make_api_request('GET', url)
+            return response.get('content', '')
+        except requests.RequestException as e:
+            print(f"⚠️  Failed to retrieve content for page {page_id}: {e}")
+            return ''  # Return empty content rather than crashing
 
 
 class MediaWikiClient:
@@ -68,57 +122,107 @@ class MediaWikiClient:
         self.api_url = f"{self.wiki_url}/api.php"
         self._logged_in = False
 
-    def _make_request(self, method: str = "POST", **params) -> dict:
-        """Make a request to the MediaWiki API"""
-        try:
-            if method.upper() == "GET":
-                response = self.session.get(self.api_url, params=params)
-            else:
-                response = self.session.post(self.api_url, data=params)
+    def _make_request(self, method: str = "POST", max_retries: int = 3, **params) -> dict:
+        """Make a request to the MediaWiki API with retry logic"""
+        for attempt in range(max_retries):
+            try:
+                if method.upper() == "GET":
+                    response = self.session.get(self.api_url, params=params, timeout=30)
+                else:
+                    response = self.session.post(self.api_url, data=params, timeout=30)
 
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            print(f"❌ MediaWiki API request failed: {e}")
-            raise
-        except json.JSONDecodeError as e:
-            print(f"❌ Invalid JSON response from MediaWiki: {e}")
-            raise
+                response.raise_for_status()
+                return response.json()
+                
+            except requests.exceptions.Timeout:
+                if attempt == max_retries - 1:
+                    print(f"❌ MediaWiki API request timed out after {max_retries} attempts")
+                    raise
+                print(f"⏳ Request timed out, retrying... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(2 ** attempt)  # Exponential backoff
+                
+            except requests.exceptions.ConnectionError as e:
+                if attempt == max_retries - 1:
+                    print(f"❌ MediaWiki connection failed: {e}")
+                    print("💡 Check MediaWiki URL and network connectivity")
+                    raise
+                print(f"⚠️  Connection error, retrying... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(2 ** attempt)
+                
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 401:
+                    print("❌ MediaWiki authentication failed - check username/password")
+                    raise
+                elif e.response.status_code == 403:
+                    print("❌ MediaWiki access denied - check user permissions")
+                    raise
+                elif e.response.status_code >= 500:
+                    if attempt == max_retries - 1:
+                        print(f"❌ MediaWiki server error: {e.response.status_code}")
+                        raise
+                    print(f"⚠️  Server error, retrying... (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(5)  # Longer wait for server errors
+                else:
+                    print(f"❌ MediaWiki API request failed: {e}")
+                    raise
+                    
+            except json.JSONDecodeError as e:
+                print(f"❌ Invalid JSON response from MediaWiki: {e}")
+                print("💡 MediaWiki might be returning HTML error page")
+                raise
+                
+        return {}
 
     def login(self):
-        """Login to MediaWiki"""
+        """Login to MediaWiki with comprehensive error handling"""
         if self._logged_in:
             return
 
         print(f"🔐 Logging into MediaWiki as {self.username}...")
 
-        # Get login token
-        response = self._make_request(
-            action="query",
-            meta="tokens",
-            type="login",
-            format="json"
-        )
+        try:
+            # Get login token
+            response = self._make_request(
+                "GET",
+                action="query",
+                meta="tokens",
+                type="login",
+                format="json"
+            )
 
-        login_token = response.get("query", {}).get("tokens", {}).get("logintoken")
-        if not login_token:
-            raise Exception("Failed to get login token from MediaWiki")
+            login_token = response.get("query", {}).get("tokens", {}).get("logintoken")
+            if not login_token:
+                raise Exception("Failed to get login token from MediaWiki - check MediaWiki configuration")
 
-        # Login
-        response = self._make_request(
-            action="login",
-            lgname=self.username,
-            lgpassword=self.password,
-            lgtoken=login_token,
-            format="json"
-        )
+            # Login
+            response = self._make_request(
+                "POST",
+                action="login",
+                lgname=self.username,
+                lgpassword=self.password,
+                lgtoken=login_token,
+                format="json"
+            )
 
-        login_result = response.get("login", {}).get("result")
-        if login_result != "Success":
-            raise Exception(f"MediaWiki login failed: {login_result}")
-
-        self._logged_in = True
-        print("✅ Successfully logged into MediaWiki")
+            login_result = response.get("login", {}).get("result")
+            if login_result == "Success":
+                self._logged_in = True
+                print("✅ Successfully logged into MediaWiki")
+            elif login_result == "Failed":
+                error_msg = response.get("login", {}).get("reason", "Unknown login failure")
+                raise Exception(f"MediaWiki login failed: {error_msg}")
+            elif login_result == "NeedToken":
+                raise Exception("Login token issue - this shouldn't happen in normal flow")
+            else:
+                raise Exception(f"Unexpected MediaWiki login result: {login_result}")
+                
+        except Exception as e:
+            print(f"❌ MediaWiki login failed: {e}")
+            print("💡 Common solutions:")
+            print("   - Verify username and password are correct")
+            print("   - Check if user has appropriate permissions")
+            print("   - Ensure MediaWiki API is accessible")
+            raise
 
     def create_page(self, title: str, content: str, summary: str = "Migrated from Azure DevOps") -> bool:
         """Create or update a page in MediaWiki"""
@@ -163,28 +267,28 @@ class ContentConverter:
         content = markdown_content
 
         # Headers
-        content = re.sub(r'^# (.+)$', r'= \\1 =', content, flags=re.MULTILINE)
-        content = re.sub(r'^## (.+)$', r'== \\1 ==', content, flags=re.MULTILINE)
-        content = re.sub(r'^### (.+)$', r'=== \\1 ===', content, flags=re.MULTILINE)
-        content = re.sub(r'^#### (.+)$', r'==== \\1 ====', content, flags=re.MULTILINE)
-        content = re.sub(r'^##### (.+)$', r'===== \\1 =====', content, flags=re.MULTILINE)
+        content = re.sub(r'^# (.+)$', r'= \1 =', content, flags=re.MULTILINE)
+        content = re.sub(r'^## (.+)$', r'== \1 ==', content, flags=re.MULTILINE)
+        content = re.sub(r'^### (.+)$', r'=== \1 ===', content, flags=re.MULTILINE)
+        content = re.sub(r'^#### (.+)$', r'==== \1 ====', content, flags=re.MULTILINE)
+        content = re.sub(r'^##### (.+)$', r'===== \1 =====', content, flags=re.MULTILINE)
 
         # Bold and italic
-        content = re.sub(r'\\*\\*(.+?)\\*\\*', r"'''\\1'''", content)
-        content = re.sub(r'\\*(.+?)\\*', r"''\\1''", content)
-        content = re.sub(r'__(.+?)__', r"'''\\1'''", content)
-        content = re.sub(r'_(.+?)_', r"''\\1''", content)
+        content = re.sub(r'\*\*(.+?)\*\*', r"'''\1'''", content)
+        content = re.sub(r'\*(.+?)\*', r"''\1''", content)
+        content = re.sub(r'__(.+?)__', r"'''\1'''", content)
+        content = re.sub(r'_(.+?)_', r"''\1''", content)
 
         # Links
-        content = re.sub(r'\\[(.+?)\\]\\((.+?)\\)', r'[\\2 \\1]', content)
+        content = re.sub(r'\[(.+?)\]\((.+?)\)', r'[\2 \1]', content)
 
         # Code blocks
-        content = re.sub(r'```(\\w+)?\\n(.*?)\\n```', r'<syntaxhighlight lang="\\1">\\n\\2\\n</syntaxhighlight>', content, flags=re.DOTALL)
-        content = re.sub(r'`(.+?)`', r'<code>\\1</code>', content)
+        content = re.sub(r'```(\w+)?\n(.*?)\n```', r'<syntaxhighlight lang="\1">\n\2\n</syntaxhighlight>', content, flags=re.DOTALL)
+        content = re.sub(r'`(.+?)`', r'<code>\1</code>', content)
 
         # Lists
-        content = re.sub(r'^(\\s*)- (.+)$', r'\\1* \\2', content, flags=re.MULTILINE)
-        content = re.sub(r'^(\\s*)\\d+\\. (.+)$', r'\\1# \\2', content, flags=re.MULTILINE)
+        content = re.sub(r'^(\s*)- (.+)$', r'\1* \2', content, flags=re.MULTILINE)
+        content = re.sub(r'^(\s*)\d+\. (.+)$', r'\1# \2', content, flags=re.MULTILINE)
 
         return content
 
@@ -192,15 +296,79 @@ class ContentConverter:
     def sanitize_page_title(title: str) -> str:
         """Sanitize page title for MediaWiki"""
         # Remove .md extension
-        title = re.sub(r'\\.md$', '', title)
+        title = re.sub(r'\.md$', '', title)
 
         # Replace underscores and hyphens with spaces
         title = title.replace('_', ' ').replace('-', ' ')
 
         # Capitalize first letter of each word
-        title = ' '.join(word.capitalize() for word in title.split())
+        title = ' '.join(word.title() for word in title.split())
 
         return title
+
+
+class ProgressTracker:
+    """Track migration progress with resume capability"""
+    
+    def __init__(self, checkpoint_file: str = '.migration_checkpoint'):
+        self.checkpoint_file = checkpoint_file
+        self.progress = self.load_checkpoint() or {
+            'processed_pages': set(),
+            'failed_pages': {},
+            'skipped_pages': {},
+            'start_time': time.time()
+        }
+    
+    def load_checkpoint(self) -> Optional[Dict]:
+        """Load progress from checkpoint file"""
+        try:
+            if os.path.exists(self.checkpoint_file):
+                with open(self.checkpoint_file, 'rb') as f:
+                    data = pickle.load(f)
+                print(f"📊 Resuming migration from checkpoint ({len(data['processed_pages'])} pages completed)")
+                return data
+        except Exception as e:
+            print(f"⚠️  Could not load checkpoint: {e}")
+        return None
+    
+    def save_checkpoint(self):
+        """Save current progress to checkpoint file"""
+        try:
+            with open(self.checkpoint_file, 'wb') as f:
+                pickle.dump(self.progress, f)
+        except Exception as e:
+            print(f"⚠️  Failed to save checkpoint: {e}")
+    
+    def mark_processed(self, page_id: str):
+        """Mark a page as successfully processed"""
+        self.progress['processed_pages'].add(page_id)
+        if len(self.progress['processed_pages']) % 10 == 0:
+            self.save_checkpoint()
+    
+    def mark_failed(self, page_id: str, error: str):
+        """Mark a page as failed with error details"""
+        self.progress['failed_pages'][page_id] = {
+            'error': error,
+            'timestamp': time.time()
+        }
+        self.save_checkpoint()
+    
+    def mark_skipped(self, page_id: str, reason: str):
+        """Mark a page as skipped"""
+        self.progress['skipped_pages'][page_id] = reason
+    
+    def should_skip(self, page_id: str) -> bool:
+        """Check if a page was already processed"""
+        return page_id in self.progress['processed_pages']
+    
+    def cleanup(self):
+        """Remove checkpoint file after successful completion"""
+        try:
+            if os.path.exists(self.checkpoint_file):
+                os.remove(self.checkpoint_file)
+                print("✅ Migration completed successfully, checkpoint removed")
+        except Exception:
+            pass  # Ignore cleanup errors
 
 
 class WikiMigrator:
@@ -244,30 +412,86 @@ class WikiMigrator:
         success_count = 0
         failed_count = 0
 
-        for page in pages:
+        # Initialize progress tracking
+        progress_tracker = ProgressTracker('.migration_progress.pkl')
+        
+        for i, page in enumerate(pages, 1):
+            # Check if page was already processed
+            if progress_tracker.should_skip(page['id']):
+                print(f"ℹ️  Skipping already processed page: {page['path']}")
+                success_count += 1
+                continue
+                
             try:
-                print(f"🔄 Migrating: {page['path']}")
+                print(f"🔄 Migrating ({i}/{len(pages)}): {page['path']}")
 
-                # Get page content
-                content = self.azure_client.get_page_content(wiki['id'], page['id'])
+                # Get page content with error handling
+                try:
+                    content = self.azure_client.get_page_content(wiki['id'], page['id'])
+                    if not content or not content.strip():
+                        print(f"  ℹ️  Skipping empty page: {page['path']}")
+                        progress_tracker.mark_skipped(page['id'], "Empty content")
+                        continue
+                except Exception as e:
+                    error_msg = f"Failed to retrieve content: {e}"
+                    print(f"  ❌ {error_msg}")
+                    progress_tracker.mark_failed(page['id'], error_msg)
+                    failed_count += 1
+                    continue
 
-                # Convert content
-                mediawiki_content = self.converter.markdown_to_mediawiki(content)
+                # Convert content with error handling
+                try:
+                    mediawiki_content = self.converter.markdown_to_mediawiki(content)
+                except Exception as e:
+                    error_msg = f"Content conversion failed: {e}"
+                    print(f"  ⚠️  {error_msg}")
+                    progress_tracker.mark_failed(page['id'], error_msg)
+                    failed_count += 1
+                    continue
 
                 # Sanitize title
-                title = self.converter.sanitize_page_title(page['path'].lstrip('/'))
+                try:
+                    title = self.converter.sanitize_page_title(page['path'].lstrip('/'))
+                    if not title or not title.strip():
+                        title = f"Page_{page['id']}"
+                        print(f"  ⚠️  Using fallback title: {title}")
+                except Exception as e:
+                    title = f"Page_{page['id']}"
+                    print(f"  ⚠️  Title sanitization failed, using: {title}")
 
-                # Create page in MediaWiki
-                if self.mediawiki_client.create_page(title, mediawiki_content):
-                    print(f"  ✅ Successfully migrated: {title}")
-                    success_count += 1
-                else:
-                    print(f"  ❌ Failed to migrate: {title}")
+                # Create page in MediaWiki with retries
+                try:
+                    if self.mediawiki_client.create_page(title, mediawiki_content):
+                        print(f"  ✅ Successfully migrated: {title}")
+                        progress_tracker.mark_processed(page['id'])
+                        success_count += 1
+                    else:
+                        error_msg = "Page creation failed"
+                        print(f"  ❌ {error_msg}: {title}")
+                        progress_tracker.mark_failed(page['id'], error_msg)
+                        failed_count += 1
+                        
+                except Exception as e:
+                    error_msg = f"Page creation error: {e}"
+                    print(f"  ❌ {error_msg}")
+                    progress_tracker.mark_failed(page['id'], error_msg)
                     failed_count += 1
 
+            except KeyboardInterrupt:
+                print("\n⚠️  Migration interrupted by user")
+                print(f"📊 Progress saved. Resume later by running the same command.")
+                progress_tracker.save_checkpoint()
+                raise
+                
             except Exception as e:
-                print(f"  ❌ Error migrating {page['path']}: {e}")
+                error_msg = f"Unexpected error: {e}"
+                print(f"  ❌ {error_msg}")
+                progress_tracker.mark_failed(page['id'], error_msg)
                 failed_count += 1
+                
+        # Clean up progress tracking on successful completion
+        if failed_count == 0:
+            progress_tracker.cleanup()
 
         return success_count, failed_count
 
@@ -301,9 +525,36 @@ def load_config():
     if missing_fields:
         print(f"❌ Missing required environment variables: {', '.join(missing_fields)}")
         print("Please copy .env.template to .env and configure all required values.")
+        print("\n💡 Required environment variables:")
+        for field in missing_fields:
+            print(f"   - {field}")
         sys.exit(1)
+    
+    # At this point we know all required fields are not None or empty
+    # Cast to str to satisfy type checker since we've validated they exist
+    organization_str = str(organization)
+    project_str = str(project)
+    pat_str = str(pat)
+    wiki_url_str = str(wiki_url)
+    username_str = str(username)
+    password_str = str(password)
+    
+    # Basic validation of values
+    try:
+        if not organization_str.replace('-', '').replace('_', '').replace('.', '').isalnum():
+            print("⚠️  Azure DevOps organization name contains unusual characters")
+        if not project_str.strip():
+            print("❌ Azure DevOps project name cannot be empty")
+            sys.exit(1)
+        if len(pat_str) < 20:
+            print("⚠️  Personal Access Token seems too short")
+        if not wiki_url_str.startswith(('http://', 'https://')):
+            print("❌ MediaWiki URL must start with http:// or https://")
+            sys.exit(1)
+    except Exception as e:
+        print(f"⚠️  Configuration validation warning: {e}")
 
-    return organization, project, pat, wiki_url, username, password, wiki_name
+    return organization_str, project_str, pat_str, wiki_url_str, username_str, password_str, wiki_name
 
 
 def main():
@@ -317,8 +568,8 @@ def main():
 
         # Initialize clients
         print("🔧 Initializing clients...")
-        azure_client = AzureDevOpsWikiClient(organization, project, pat)  # type: ignore
-        mediawiki_client = MediaWikiClient(wiki_url, username, password)  # type: ignore
+        azure_client = AzureDevOpsWikiClient(organization, project, pat)
+        mediawiki_client = MediaWikiClient(wiki_url, username, password)
 
         # Initialize migrator
         migrator = WikiMigrator(azure_client, mediawiki_client)

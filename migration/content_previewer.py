@@ -9,7 +9,8 @@ import sys
 import json
 import base64
 import re
-from typing import Dict, List, Optional
+import time
+from typing import Dict, List, Optional, Tuple
 
 import requests
 from dotenv import load_dotenv
@@ -24,31 +25,31 @@ class ContentConverter:
         content = markdown_content
 
         # Headers
-        content = re.sub(r'^# (.+)$', r'= \\1 =', content, flags=re.MULTILINE)
-        content = re.sub(r'^## (.+)$', r'== \\1 ==', content, flags=re.MULTILINE)
-        content = re.sub(r'^### (.+)$', r'=== \\1 ===', content, flags=re.MULTILINE)
-        content = re.sub(r'^#### (.+)$', r'==== \\1 ====', content, flags=re.MULTILINE)
-        content = re.sub(r'^##### (.+)$', r'===== \\1 =====', content, flags=re.MULTILINE)
+        content = re.sub(r'^# (.+)$', r'= \1 =', content, flags=re.MULTILINE)
+        content = re.sub(r'^## (.+)$', r'== \1 ==', content, flags=re.MULTILINE)
+        content = re.sub(r'^### (.+)$', r'=== \1 ===', content, flags=re.MULTILINE)
+        content = re.sub(r'^#### (.+)$', r'==== \1 ====', content, flags=re.MULTILINE)
+        content = re.sub(r'^##### (.+)$', r'===== \1 =====', content, flags=re.MULTILINE)
 
         # Bold and Italic
-        content = re.sub(r'\\*\\*(.+?)\\*\\*', r"'''\\1'''", content)
-        content = re.sub(r'\\*(.+?)\\*', r"''\\1''", content)
-        content = re.sub(r'__(.+?)__', r"'''\\1'''", content)
-        content = re.sub(r'_(.+?)_', r"''\\1''", content)
+        content = re.sub(r'\*\*(.+?)\*\*', r"'''\1'''", content)
+        content = re.sub(r'\*(.+?)\*', r"''\1''", content)
+        content = re.sub(r'__(.+?)__', r"'''\1'''", content)
+        content = re.sub(r'_(.+?)_', r"''\1''", content)
 
         # Links
-        content = re.sub(r'\\[(.+?)\\]\\((.+?)\\)', r'[\\2 \\1]', content)
+        content = re.sub(r'\[(.+?)\]\((.+?)\)', r'[\2 \1]', content)
 
         # Code blocks
-        content = re.sub(r'```(\\w+)?\\n(.*?)\\n```', r'<syntaxhighlight lang="\\1">\\n\\2\\n</syntaxhighlight>', content, flags=re.DOTALL)
-        content = re.sub(r'`(.+?)`', r'<code>\\1</code>', content)
+        content = re.sub(r'```(\w+)?\n(.*?)\n```', r'<syntaxhighlight lang="\1">\n\2\n</syntaxhighlight>', content, flags=re.DOTALL)
+        content = re.sub(r'`(.+?)`', r'<code>\1</code>', content)
 
         # Lists
-        content = re.sub(r'^(\\s*)- (.+)$', r'\\1* \\2', content, flags=re.MULTILINE)
-        content = re.sub(r'^(\\s*)\\d+\\. (.+)$', r'\\1# \\2', content, flags=re.MULTILINE)
+        content = re.sub(r'^(\s*)- (.+)$', r'\1* \2', content, flags=re.MULTILINE)
+        content = re.sub(r'^(\s*)\d+\. (.+)$', r'\1# \2', content, flags=re.MULTILINE)
 
         # Tables (enhanced conversion)
-        lines = content.split('\\n')
+        lines = content.split('\n')
         in_table = False
         converted_lines = []
         table_headers = []
@@ -88,9 +89,9 @@ class ContentConverter:
         return '\\n'.join(converted_lines)
 
     @staticmethod
-    def analyze_conversion_issues(original: str, converted: str) -> Dict:
+    def analyze_conversion_issues(original: str, converted: str) -> Dict[str, List[str]]:
         """Analyze potential issues in the conversion"""
-        issues = {
+        issues: Dict[str, List[str]] = {
             'warnings': [],
             'manual_review_needed': [],
             'info': []
@@ -121,7 +122,7 @@ class ContentConverter:
             )
 
         # Check for task lists
-        task_lists = re.findall(r'- \\[[ x]\\]', original)
+        task_lists = re.findall(r'- \[[ x]\]', original)
         if task_lists:
             issues['info'].append(
                 f"☑️  Found {len(task_lists)} task list items - converted to regular lists"
@@ -160,22 +161,64 @@ class ContentPreviewer:
         encoded_auth = base64.b64encode(auth_string.encode()).decode()
         self.session.headers.update({
             'Authorization': f'Basic {encoded_auth}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'User-Agent': 'MediaWiki-Content-Previewer/1.0'
         })
 
+    def _make_api_request(self, method: str, url: str, max_retries: int = 3) -> Dict:
+        """Make API request with retry logic and proper error handling"""
+        for attempt in range(max_retries):
+            try:
+                if method.upper() == 'GET':
+                    response = self.session.get(url, timeout=30)
+                else:
+                    response = self.session.post(url, timeout=30)
+                    
+                response.raise_for_status()
+                return response.json()
+                
+            except requests.exceptions.Timeout:
+                if attempt == max_retries - 1:
+                    raise
+                print(f"⏳ Request timed out, retrying... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(2 ** attempt)
+                
+            except requests.exceptions.ConnectionError:
+                if attempt == max_retries - 1:
+                    raise
+                print(f"⚠️  Connection error, retrying... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(2 ** attempt)
+                
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:  # Rate limited
+                    retry_after = int(e.response.headers.get('Retry-After', 60))
+                    print(f"⏳ Rate limited, waiting {retry_after}s...")
+                    time.sleep(retry_after)
+                    continue
+                else:
+                    raise
+                    
+        return {}
+        
     def get_wikis(self) -> List[Dict]:
         """Get all wikis in the project"""
         url = f"{self.base_url}/wiki/wikis?api-version=7.0"
-        response = self.session.get(url)
-        response.raise_for_status()
-        return response.json().get('value', [])
+        try:
+            response = self._make_api_request('GET', url)
+            return response.get('value', [])
+        except requests.RequestException as e:
+            print(f"❌ Failed to retrieve wikis: {e}")
+            raise
 
     def get_wiki_pages(self, wiki_id: str) -> List[Dict]:
         """Get all pages in a wiki"""
         url = f"{self.base_url}/wiki/wikis/{wiki_id}/pages?api-version=7.0&recursionLevel=full"
-        response = self.session.get(url)
-        response.raise_for_status()
-        return response.json().get('value', [])
+        try:
+            response = self._make_api_request('GET', url)
+            return response.get('value', [])
+        except requests.RequestException as e:
+            print(f"❌ Failed to retrieve pages for wiki {wiki_id}: {e}")
+            raise
 
     def get_page_content(self, wiki_id: str, page_id: str) -> str:
         """Get the content of a specific page"""
@@ -380,7 +423,7 @@ Based on the {len(previews)} sample pages:
         return report
 
 
-def load_config():
+def load_config() -> Tuple[str, str, str, Optional[str]]:
     """Load configuration from .env file"""
     load_dotenv()
 
@@ -389,11 +432,12 @@ def load_config():
     azure_pat = os.getenv("AZURE_DEVOPS_PAT")
     wiki_name = os.getenv("AZURE_WIKI_NAME")
 
-    if not all([azure_org, azure_project, azure_pat]):
+    if not azure_org or not azure_project or not azure_pat:
         print("❌ Missing required environment variables:")
         print("Please set: AZURE_DEVOPS_ORGANIZATION, AZURE_DEVOPS_PROJECT, AZURE_DEVOPS_PAT")
         sys.exit(1)
 
+    # Type checker now knows these are not None due to the check above
     return azure_org, azure_project, azure_pat, wiki_name
 
 
@@ -416,7 +460,7 @@ def main():
 
     try:
         # Initialize previewer
-        previewer = ContentPreviewer(azure_org, azure_project, azure_pat)  # type: ignore
+        previewer = ContentPreviewer(azure_org, azure_project, azure_pat)
 
         print(f"🔗 Connecting to Azure DevOps: {azure_org}/{azure_project}")
 

@@ -9,7 +9,8 @@ import sys
 import json
 import re
 import time
-from typing import Dict, List, Tuple, Set
+import pickle
+from typing import Dict, List, Tuple, Set, Optional, Union
 from urllib.parse import urljoin, urlparse
 
 import requests
@@ -27,22 +28,49 @@ class MigrationValidator:
         self.api_url = f"{self.mediawiki_url}/api.php"
         self._logged_in = False
 
-    def _make_request(self, method: str = "POST", **params) -> dict:
-        """Make a request to the MediaWiki API"""
-        try:
-            if method.upper() == "GET":
-                response = self.session.get(self.api_url, params=params)
-            else:
-                response = self.session.post(self.api_url, data=params)
+    def _make_request(self, method: str = "POST", max_retries: int = 3, **params) -> dict:
+        """Make a request to the MediaWiki API with retry logic"""
+        for attempt in range(max_retries):
+            try:
+                if method.upper() == "GET":
+                    response = self.session.get(self.api_url, params=params, timeout=30)
+                else:
+                    response = self.session.post(self.api_url, data=params, timeout=30)
 
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            print(f"❌ MediaWiki API request failed: {e}")
-            raise
-        except json.JSONDecodeError as e:
-            print(f"❌ Invalid JSON response from MediaWiki: {e}")
-            raise
+                response.raise_for_status()
+                return response.json()
+                
+            except requests.exceptions.Timeout:
+                if attempt == max_retries - 1:
+                    print(f"❌ MediaWiki API request timed out after {max_retries} attempts")
+                    raise
+                print(f"⏳ Request timed out, retrying... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(2 ** attempt)
+                
+            except requests.exceptions.ConnectionError as e:
+                if attempt == max_retries - 1:
+                    print(f"❌ MediaWiki connection failed: {e}")
+                    raise
+                print(f"⚠️  Connection error, retrying... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(2 ** attempt)
+                
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code >= 500:
+                    if attempt == max_retries - 1:
+                        print(f"❌ MediaWiki server error: {e.response.status_code}")
+                        raise
+                    print(f"⚠️  Server error, retrying... (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(5)
+                else:
+                    print(f"❌ MediaWiki API request failed: {e}")
+                    raise
+                    
+            except json.JSONDecodeError as e:
+                print(f"❌ Invalid JSON response from MediaWiki: {e}")
+                print("💡 MediaWiki might be returning HTML error page")
+                raise
+                
+        return {}
 
     def login(self):
         """Login to MediaWiki"""
@@ -152,9 +180,9 @@ class MigrationValidator:
                 'status_code': 0
             }
 
-    def analyze_content_quality(self, title: str, content: str) -> Dict:
+    def analyze_content_quality(self, title: str, content: str) -> Dict[str, Union[str, int, List[str]]]:
         """Analyze the quality of migrated content"""
-        analysis = {
+        analysis: Dict[str, Union[str, int, List[str]]] = {
             'title': title,
             'length': len(content),
             'word_count': len(content.split()),
@@ -260,8 +288,6 @@ class MigrationValidator:
                 continue
 
         return link_validation
-
-    from typing import Optional
 
     def run_comprehensive_validation(self, expected_pages: Optional[List[str]] = None) -> Dict:
         """Run comprehensive migration validation"""
@@ -456,7 +482,7 @@ class MigrationValidator:
         # Issues breakdown
         report += f"\n## 🚨 Issues Found\n\n"
 
-        issues_by_type = {}
+        issues_by_type: Dict[str, int] = {}
         for page_detail in results['page_details']:
             if 'quality' in page_detail and page_detail['quality']['issues']:
                 for issue in page_detail['quality']['issues']:
@@ -519,13 +545,13 @@ def load_config() -> Tuple[str, str, str]:
     wiki_username = os.getenv("WIKI_USERNAME")
     wiki_password = os.getenv("WIKI_PASSWORD")
 
-    if not all([wiki_url, wiki_username, wiki_password]):
+    if not wiki_url or not wiki_username or not wiki_password:
         print("❌ Missing required environment variables!")
         print("Please set: WIKI_URL, WIKI_USERNAME, WIKI_PASSWORD")
         sys.exit(1)
 
-    # Cast to str to satisfy type checker
-    return str(wiki_url), str(wiki_username), str(wiki_password)
+    # Type checker now knows these are not None due to the check above
+    return wiki_url, wiki_username, wiki_password
 
 
 def main():

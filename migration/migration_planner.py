@@ -20,9 +20,11 @@ import os
 import sys
 import json
 import base64
+import time
 from collections import defaultdict, Counter
-from typing import Dict, List, Tuple, Union, Any
+from typing import Dict, List, Tuple, Union, Any, Optional
 import re
+from datetime import datetime
 
 import requests
 from dotenv import load_dotenv
@@ -51,6 +53,81 @@ class MigrationPlanner:
         >>> report = planner.generate_report(analysis)
     """
 
+    def _make_api_request(self, method: str, url: str, max_retries: int = 3,
+                         backoff_factor: float = 1.0) -> Dict[str, Any]:
+        """
+        Make API request with retry logic and proper error handling.
+
+        Args:
+            method (str): HTTP method ('GET', 'POST', etc.)
+            url (str): Full URL for the API request
+            max_retries (int): Maximum number of retry attempts
+            backoff_factor (float): Exponential backoff multiplier
+
+        Returns:
+            Dict[str, Any]: Parsed JSON response
+
+        Raises:
+            requests.RequestException: If all retry attempts fail
+        """
+        for attempt in range(max_retries):
+            try:
+                if method.upper() == 'GET':
+                    response = self.session.get(url, timeout=30)
+                elif method.upper() == 'POST':
+                    response = self.session.post(url, timeout=30)
+                else:
+                    raise ValueError(f"Unsupported HTTP method: {method}")
+
+                response.raise_for_status()
+                return response.json()
+
+            except requests.exceptions.Timeout:
+                if attempt == max_retries - 1:
+                    print(f"❌ Request timed out after {max_retries} attempts: {url}")
+                    raise
+                wait_time = backoff_factor * (2 ** attempt)
+                print(f"⏳ Request timed out, retrying in {wait_time}s... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(wait_time)
+
+            except requests.exceptions.ConnectionError as e:
+                if attempt == max_retries - 1:
+                    print(f"❌ Connection failed after {max_retries} attempts: {e}")
+                    raise
+                wait_time = backoff_factor * (2 ** attempt)
+                print(f"⚠️  Connection error, retrying in {wait_time}s... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(wait_time)
+
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 429:  # Rate limited
+                    retry_after = int(e.response.headers.get('Retry-After', 60))
+                    print(f"⏳ Rate limited, waiting {retry_after}s...")
+                    time.sleep(retry_after)
+                    continue
+                elif e.response.status_code == 401:
+                    print("❌ Authentication failed - check your Personal Access Token")
+                    raise
+                elif e.response.status_code == 403:
+                    print("❌ Access denied - check your PAT permissions (need Wiki read access)")
+                    raise
+                elif e.response.status_code == 404:
+                    print(f"❌ Resource not found: {url}")
+                    raise
+                else:
+                    if attempt == max_retries - 1:
+                        print(f"❌ HTTP {e.response.status_code} error after {max_retries} attempts")
+                        raise
+                    wait_time = backoff_factor * (2 ** attempt)
+                    print(f"⚠️  HTTP {e.response.status_code}, retrying in {wait_time}s... (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(wait_time)
+
+            except json.JSONDecodeError as e:
+                print(f"❌ Invalid JSON response from Azure DevOps API: {e}")
+                print(f"💡 This may indicate an authentication or API endpoint issue")
+                raise
+
+        return {}  # Should not reach here
+
     def __init__(self, organization: str, project: str, personal_access_token: str):
         """
         Initialize the Migration Planner with Azure DevOps credentials.
@@ -78,8 +155,11 @@ class MigrationPlanner:
         encoded_auth = base64.b64encode(auth_string.encode()).decode()
         self.session.headers.update({
             'Authorization': f'Basic {encoded_auth}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'User-Agent': 'MediaWiki-Migration-Tool/1.0'
         })
+
+        # Set reasonable timeouts (handled per request, not on session)
 
     def get_wikis(self) -> List[Dict[str, Any]]:
         """
@@ -97,9 +177,12 @@ class MigrationPlanner:
             ...     print(f"Wiki: {wiki['name']} (ID: {wiki['id']})")
         """
         url = f"{self.base_url}/wiki/wikis?api-version=7.0"
-        response = self.session.get(url)
-        response.raise_for_status()
-        return response.json().get('value', [])
+        try:
+            response = self._make_api_request('GET', url)
+            return response.get('value', [])
+        except requests.RequestException as e:
+            print(f"❌ Failed to retrieve wikis: {e}")
+            raise
 
     def get_wiki_pages(self, wiki_id: str) -> List[Dict[str, Any]]:
         """
@@ -118,9 +201,12 @@ class MigrationPlanner:
             Uses recursionLevel=full to get all nested pages in the wiki hierarchy.
         """
         url = f"{self.base_url}/wiki/wikis/{wiki_id}/pages?api-version=7.0&recursionLevel=full"
-        response = self.session.get(url)
-        response.raise_for_status()
-        return response.json().get('value', [])
+        try:
+            response = self._make_api_request('GET', url)
+            return response.get('value', [])
+        except requests.RequestException as e:
+            print(f"❌ Failed to retrieve pages for wiki {wiki_id}: {e}")
+            raise
 
     def get_page_content(self, wiki_id: str, page_id: str) -> str:
         """
@@ -140,9 +226,12 @@ class MigrationPlanner:
             Uses includeContent=true to get the actual page content in the response.
         """
         url = f"{self.base_url}/wiki/wikis/{wiki_id}/pages/{page_id}?api-version=7.0&includeContent=true"
-        response = self.session.get(url)
-        response.raise_for_status()
-        return response.json().get('content', '')
+        try:
+            response = self._make_api_request('GET', url)
+            return response.get('content', '')
+        except requests.RequestException as e:
+            print(f"⚠️  Failed to retrieve content for page {page_id}: {e}")
+            return ''  # Return empty content rather than crashing
 
     def analyze_content_complexity(self, content: str) -> Dict[str, Union[int, str]]:
         """
@@ -302,8 +391,14 @@ class MigrationPlanner:
 
             try:
                 # Get page content and skip empty pages
-                content = self.get_page_content(wiki_id, page['id'])
-                if not content.strip():
+                try:
+                    content = self.get_page_content(wiki_id, page['id'])
+                    if not content or not content.strip():
+                        print(f"  ℹ️  Skipping empty page: {page['path']}")
+                        continue
+
+                except Exception as e:
+                    print(f"  ⚠️  Error getting content for {page['path']}: {e}")
                     continue
 
                 # Perform detailed content analysis
@@ -579,11 +674,10 @@ Based on the analysis:
         Returns:
             str: Current date in format "Month Day, Year"
         """
-        from datetime import datetime
         return datetime.now().strftime("%B %d, %Y")
 
 
-def load_config() -> Tuple[str, str, str, Union[str, None]]:
+def load_config() -> Tuple[str, str, str, Optional[str]]:
     """
     Load and validate Azure DevOps configuration from environment variables.
 
@@ -591,7 +685,7 @@ def load_config() -> Tuple[str, str, str, Union[str, None]]:
     credential management. All credentials should be kept out of source code.
 
     Returns:
-        Tuple[str, str, str, Union[str, None]]: Organization, project, PAT token, and optional wiki name
+        Tuple[str, str, str, Optional[str]]: Organization, project, PAT token, and optional wiki name
 
     Raises:
         SystemExit: If required environment variables are missing
@@ -617,18 +711,14 @@ def load_config() -> Tuple[str, str, str, Union[str, None]]:
     azure_pat = os.getenv("AZURE_DEVOPS_PAT")
     wiki_name = os.getenv("AZURE_WIKI_NAME")  # Optional
 
-    # Validate required variables are present
-    if not all([azure_org, azure_project, azure_pat]):
+    # Validate required variables are present and not empty
+    if not azure_org or not azure_project or not azure_pat:
         print("❌ Missing required environment variables:")
         print("Please set: AZURE_DEVOPS_ORGANIZATION, AZURE_DEVOPS_PROJECT, AZURE_DEVOPS_PAT")
         print("\nCreate a .env file or set environment variables with your Azure DevOps credentials.")
         sys.exit(1)
 
-    # Ensure we have valid strings for required parameters
-    if not azure_org or not azure_project or not azure_pat:
-        print("❌ One or more required environment variables are empty")
-        sys.exit(1)
-
+    # Type checker now knows these are not None due to the check above
     return azure_org, azure_project, azure_pat, wiki_name
 
 
@@ -689,8 +779,30 @@ def main() -> None:
 
             # Save report to file
             report_file = "migration_analysis_report.md"
-            with open(report_file, "w", encoding='utf-8') as f:
-                f.write(report)
+            try:
+                # Ensure we can write to the current directory
+                if not os.access('.', os.W_OK):
+                    print("❌ No write permission to current directory")
+                    print(f"💡 Please run from a directory with write permissions")
+                    sys.exit(1)
+
+                with open(report_file, "w", encoding='utf-8') as f:
+                    f.write(report)
+                    f.flush()  # Ensure data is written
+
+            except PermissionError:
+                print(f"❌ Permission denied: Cannot write report to {report_file}")
+                print("💡 Try running from a directory with write permissions")
+                sys.exit(1)
+            except OSError as e:
+                if e.errno == 28:  # No space left on device
+                    print("❌ Insufficient disk space to save report")
+                else:
+                    print(f"❌ System error saving report: {e}")
+                sys.exit(1)
+            except Exception as e:
+                print(f"❌ Unexpected error saving report: {e}")
+                sys.exit(1)
 
             # Provide summary feedback to user
             print(f"\n✅ Analysis complete!")

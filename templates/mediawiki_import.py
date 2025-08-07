@@ -8,6 +8,7 @@ import os
 import sys
 import json
 import glob
+import time
 from pathlib import Path
 from typing import Tuple, Optional
 
@@ -23,22 +24,53 @@ class MediaWikiImporter:
         self.session = requests.Session()
         self.api_url = f"{self.wiki_url}/api.php"
 
-    def _make_request(self, method: str = "POST", **params) -> dict:
-        """Make a request to the MediaWiki API"""
-        try:
-            if method.upper() == "GET":
-                response = self.session.get(self.api_url, params=params)
-            else:
-                response = self.session.post(self.api_url, data=params)
+    def _make_request(self, method: str = "POST", max_retries: int = 3, **params) -> dict:
+        """Make a request to the MediaWiki API with retry logic"""
+        for attempt in range(max_retries):
+            try:
+                if method.upper() == "GET":
+                    response = self.session.get(self.api_url, params=params, timeout=30)
+                else:
+                    response = self.session.post(self.api_url, data=params, timeout=30)
 
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            print(f"❌ API request failed: {e}")
-            sys.exit(1)
-        except json.JSONDecodeError as e:
-            print(f"❌ Invalid JSON response: {e}")
-            sys.exit(1)
+                response.raise_for_status()
+                return response.json()
+                
+            except requests.exceptions.Timeout:
+                if attempt == max_retries - 1:
+                    print(f"❌ API request timed out after {max_retries} attempts")
+                    raise Exception("Request timeout - check network connectivity")
+                print(f"⏳ Request timed out, retrying... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(2 ** attempt)
+                
+            except requests.exceptions.ConnectionError as e:
+                if attempt == max_retries - 1:
+                    print(f"❌ API connection failed: {e}")
+                    print("💡 Check MediaWiki URL and network connectivity")
+                    raise Exception(f"Connection failed: {e}")
+                print(f"⚠️  Connection error, retrying... (attempt {attempt + 1}/{max_retries})")
+                time.sleep(2 ** attempt)
+                
+            except requests.exceptions.HTTPError as e:
+                if e.response.status_code == 401:
+                    print("❌ Authentication failed - check username/password")
+                    raise Exception("Authentication failed")
+                elif e.response.status_code >= 500:
+                    if attempt == max_retries - 1:
+                        print(f"❌ Server error: {e.response.status_code}")
+                        raise Exception(f"Server error: {e.response.status_code}")
+                    print(f"⚠️  Server error, retrying... (attempt {attempt + 1}/{max_retries})")
+                    time.sleep(5)
+                else:
+                    print(f"❌ API request failed: {e}")
+                    raise Exception(f"HTTP error: {e.response.status_code}")
+                    
+            except json.JSONDecodeError as e:
+                print(f"❌ Invalid JSON response: {e}")
+                print("💡 MediaWiki might be returning HTML error page")
+                raise Exception("Invalid JSON response")
+                
+        return {}
 
     def get_login_token(self) -> str:
         """Get login token from MediaWiki"""
@@ -177,7 +209,7 @@ class MediaWikiImporter:
         return success_count, failed_count
 
 
-def load_config():
+def load_config() -> Tuple[str, str, str, str]:
     """Load configuration from .env file"""
     load_dotenv()
 
@@ -187,7 +219,7 @@ def load_config():
     template_dir = os.getenv('TEMPLATE_DIR', 'internal-wiki/templates')
 
     # Validate required fields
-    if not all([wiki_url, username, password]):
+    if not wiki_url or not username or not password:
         print("❌ Missing required environment variables.")
         print("Please copy .env.template to .env and configure:")
         print("  - WIKI_URL")
@@ -195,6 +227,7 @@ def load_config():
         print("  - WIKI_PASSWORD")
         sys.exit(1)
 
+    # Type checker now knows these are not None due to the check above
     return wiki_url, username, password, template_dir
 
 
@@ -208,7 +241,7 @@ def main():
         wiki_url, username, password, template_dir = load_config()
 
         # Initialize importer
-        importer = MediaWikiImporter(wiki_url, username, password)  # type: ignore
+        importer = MediaWikiImporter(wiki_url, username, password)
 
         # Import templates
         success_count, failed_count = importer.import_templates_from_directory(template_dir)

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Development Toolbox Repository Catalogue</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Development Toolbox Repository Catalogue - MediaWiki Tools</title>
 <style>
 /* Ant Design inspired CSS variables and base styles */
 :root {
@@ -23,77 +24,260 @@
     --bg-card: #ffffff;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.5715; color: var(--text-primary); background: var(--bg-light); padding: 2rem; }
-.repo-grid { display: grid; grid-gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
-.repo-card { border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--bg-card); padding: 1rem; box-shadow: var(--box-shadow); }
-.repo-card h2 { margin-top: 0; font-size: 1.25rem; color: var(--primary-color); }
-.repo-card p { margin-bottom: 0.5rem; color: var(--text-secondary); }
-.repo-card pre { background: #f0f0f0; padding: 0.5rem; border-radius: var(--border-radius); overflow-x: auto; }
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+    line-height: 1.5715; 
+    color: var(--text-primary); 
+    background: var(--bg-light); 
+}
+.header { 
+    background: var(--bg-color); 
+    border-bottom: 1px solid #f0f0f0; 
+    padding: 24px 0; 
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.header-content { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 0 24px; 
+}
+.header h1 { 
+    margin: 0; 
+    color: var(--primary-color); 
+    font-size: 32px;
+    font-weight: 600;
+}
+.header p { 
+    margin: 8px 0 0 0; 
+    color: var(--text-secondary); 
+    font-size: 16px;
+}
+.back-btn { 
+    display: inline-block; 
+    margin-top: 16px; 
+    padding: 8px 16px;
+    color: var(--primary-color); 
+    text-decoration: none; 
+    font-size: 14px; 
+    border: 1px solid var(--primary-color);
+    border-radius: var(--border-radius);
+    transition: all 0.2s;
+}
+.back-btn:hover { 
+    background: var(--primary-color);
+    color: white;
+}
+.container { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    padding: 24px; 
+}
+.repo-grid { 
+    display: grid; 
+    grid-gap: 20px; 
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+}
+.repo-card { 
+    border: 1px solid var(--border-color); 
+    border-radius: var(--border-radius); 
+    background: var(--bg-card); 
+    padding: 20px; 
+    box-shadow: var(--box-shadow); 
+    transition: all 0.2s;
+    position: relative;
+}
+.repo-card:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+}
+.repo-card.highlight {
+    border-color: var(--primary-color);
+    background: #e6f7ff;
+}
+.repo-card.highlight::before {
+    content: "⭐ Current Repository";
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: var(--primary-color);
+    color: white;
+    padding: 2px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.repo-card h2 { 
+    margin-top: 0; 
+    font-size: 18px; 
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.repo-card h2 a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+.repo-card h2 a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+.repo-card p { 
+    margin-bottom: 16px; 
+    color: var(--text-secondary); 
+    font-size: 14px;
+    line-height: 1.6;
+}
+.repo-card pre { 
+    background: #f6f8fa; 
+    padding: 12px; 
+    border-radius: var(--border-radius); 
+    overflow-x: auto; 
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-size: 13px;
+    margin: 0;
+    border: 1px solid #e1e4e8;
+}
+.repo-tags {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+}
+.tag-python { background: #3776ab; color: white; }
+.tag-docker { background: #2496ed; color: white; }
+.tag-terraform { background: #7e3ff2; color: white; }
+.tag-cli { background: #4a5568; color: white; }
+.tag-mediawiki { background: #36c; color: white; }
+.tag-github { background: #24292e; color: white; }
+.tag-tutorial { background: #28a745; color: white; }
 </style>
 </head>
 <body>
-<h1>Development Toolbox Repository Catalogue</h1>
+<div class="header">
+    <div class="header-content">
+        <h1>📂 Development Toolbox Repository Catalogue</h1>
+        <p>Comprehensive collection of development tools, utilities, and automation scripts</p>
+        <a href="index.html" class="back-btn">← Back to MediaWiki Tools</a>
+    </div>
+</div>
+<div class="container">
 <div class="repo-grid">
 
 <div class="repo-card">
   <h2><a href="https://github.com/development-toolbox/.github">.github</a></h2>
-  <p>Development Toolbox is a private collection of essential scripts and tools aimed at simplifying development workflows, managing GitHub tasks, and generating project structures. Access is by invitation only, with a public release planned after thorough testing and documentation.</p>
+  <p>Central repository containing organisation-wide configurations, documentation standards, and contribution guidelines for the Development Toolbox ecosystem. Includes reusable workflows, issue templates, and community health files.</p>
+  <pre>git clone https://github.com/development-toolbox/.github.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-github">GitHub</span>
+    <span class="tag tag-cli">Configuration</span>
+  </div>
 </div>
-
 
 <div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/development-toolbox-compose-file-generator">development-toolbox-compose-file-generator</a></h2>
-  <p>Generates docker-compose and podman-compose files by inspecting running containers.</p>
+  <h2><a href="https://github.com/development-toolbox/development-toolbox-compose-file-generator">Compose File Generator</a></h2>
+  <p>Automatically generates Docker Compose and Podman Compose configuration files by analysing currently running containers. Simplifies container orchestration setup and migration between environments with intelligent service detection.</p>
+  <pre>git clone https://github.com/development-toolbox/development-toolbox-compose-file-generator.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-python">Python</span>
+    <span class="tag tag-docker">Docker</span>
+    <span class="tag tag-cli">CLI Tool</span>
+  </div>
 </div>
-
 
 <div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/demo-container-deploy">demo-container-deploy</a></h2>
-  <p>None</p>
+  <h2><a href="https://github.com/development-toolbox/demo-container-deploy">Container Deploy Demo</a></h2>
+  <p>Demonstration repository showcasing container deployment strategies, CI/CD pipelines, and best practices for containerised application deployment. Includes examples for Kubernetes, Docker Swarm, and standalone deployments.</p>
+  <pre>git clone https://github.com/development-toolbox/demo-container-deploy.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-docker">Docker</span>
+    <span class="tag tag-tutorial">Tutorial</span>
+  </div>
 </div>
-
 
 <div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/rich-examples">rich-examples</a></h2>
-  <p>A collection of Python examples showcasing the Rich library’s power for beautiful, interactive terminal output.</p>
+  <h2><a href="https://github.com/development-toolbox/rich-examples">Rich Library Examples</a></h2>
+  <p>Comprehensive collection of Python examples demonstrating the Rich library's capabilities for creating beautiful, interactive terminal user interfaces. Includes tables, progress bars, syntax highlighting, and advanced layouts.</p>
+  <pre>git clone https://github.com/development-toolbox/rich-examples.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-python">Python</span>
+    <span class="tag tag-cli">CLI</span>
+    <span class="tag tag-tutorial">Examples</span>
+  </div>
 </div>
-
 
 <div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/openstack-clouds-yaml-to-terraform-workspace-vars">openstack-clouds-yaml-to-terraform-workspace-vars</a></h2>
-  <p>A tool to convert OpenStack clouds.yaml authentication details into Terraform Cloud workspace environment variables.</p>
+  <h2><a href="https://github.com/development-toolbox/openstack-clouds-yaml-to-terraform-workspace-vars">OpenStack to Terraform Converter</a></h2>
+  <p>Utility tool that converts OpenStack clouds.yaml authentication configurations into Terraform Cloud workspace environment variables. Streamlines infrastructure-as-code workflows for OpenStack deployments with automated variable mapping.</p>
+  <pre>git clone https://github.com/development-toolbox/openstack-clouds-yaml-to-terraform-workspace-vars.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-python">Python</span>
+    <span class="tag tag-terraform">Terraform</span>
+    <span class="tag tag-cli">CLI Tool</span>
+  </div>
 </div>
-
 
 <div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/development-toolbox-git-hooks-installer">development-toolbox-git-hooks-installer</a></h2>
-  <p>Installation of git-hooks documentation system</p>
+  <h2><a href="https://github.com/development-toolbox/development-toolbox-git-hooks-installer">Git Hooks Installer</a></h2>
+  <p>Automated Git hooks installer that enforces code quality standards, commit message conventions, and documentation requirements across Development Toolbox projects. Includes pre-commit, pre-push, and commit-msg hooks.</p>
+  <pre>git clone https://github.com/development-toolbox/development-toolbox-git-hooks-installer.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-python">Python</span>
+    <span class="tag tag-github">Git</span>
+    <span class="tag tag-cli">Automation</span>
+  </div>
 </div>
-
 
 <div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/development-toolbox-demo-repo-branch-search">development-toolbox-demo-repo-branch-search</a></h2>
-  <p>This is a repository where I demostrate searching for content in diffrent branches.</p>
+  <h2><a href="https://github.com/development-toolbox/development-toolbox-demo-repo-branch-search">Branch Search Demo</a></h2>
+  <p>Educational repository demonstrating advanced Git techniques for searching content across multiple branches. Includes practical examples, scripts, and best practices for efficient branch management and content discovery.</p>
+  <pre>git clone https://github.com/development-toolbox/development-toolbox-demo-repo-branch-search.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-github">Git</span>
+    <span class="tag tag-tutorial">Tutorial</span>
+  </div>
 </div>
-
 
 <div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/development-toolbox-smarttree">development-toolbox-smarttree</a></h2>
-  <p>SmartTree is a modern, cross-platform CLI tool to visualize directory structures like the Unix tree command — with enhanced features such as emoji support, Markdown export, colorized output, depth control, .treeignore filtering, and summary statistics. Built with Python, ideal for automation, documentation, and DevOps workflows.</p>
+  <h2><a href="https://github.com/development-toolbox/development-toolbox-smarttree">SmartTree</a></h2>
+  <p>Modern, cross-platform CLI tool for visualising directory structures with enhanced features including emoji support, Markdown export, colourised output, depth control, .treeignore filtering, and summary statistics. Essential for documentation and DevOps workflows.</p>
+  <pre>git clone https://github.com/development-toolbox/development-toolbox-smarttree.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-python">Python</span>
+    <span class="tag tag-cli">CLI Tool</span>
+  </div>
 </div>
-
 
 <div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/development-toolbox-github-tutorials-agent">development-toolbox-github-tutorials-agent</a></h2>
-  <p>Claude Code agent for comprehensive GitHub tutorials</p>
+  <h2><a href="https://github.com/development-toolbox/development-toolbox-github-tutorials-agent">GitHub Tutorials Agent</a></h2>
+  <p>Specialised Claude Code agent providing comprehensive GitHub tutorials, best practices, and automated workflow generation. Helps developers master GitHub features from basic operations to advanced automation strategies.</p>
+  <pre>git clone https://github.com/development-toolbox/development-toolbox-github-tutorials-agent.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-github">GitHub</span>
+    <span class="tag tag-tutorial">Tutorial</span>
+  </div>
 </div>
 
-
-<div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools">development-toolbox-mediawiki-tools</a></h2>
-  <p>Comprehensive toolkit for MediaWiki management: migration, maintenance, sync, and automation tools</p>
+<div class="repo-card highlight">
+  <h2><a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools">MediaWiki Tools</a></h2>
+  <p>Comprehensive toolkit for MediaWiki management including Azure DevOps Wiki migration, content synchronisation, template management, and automation tools. Features interactive setup wizard, content preview, validation utilities, and extensive documentation.</p>
+  <pre>git clone https://github.com/development-toolbox/development-toolbox-mediawiki-tools.git</pre>
+  <div class="repo-tags">
+    <span class="tag tag-python">Python</span>
+    <span class="tag tag-mediawiki">MediaWiki</span>
+    <span class="tag tag-cli">Migration</span>
+  </div>
 </div>
 
+</div>
 </div>
 </body>
 </html>
