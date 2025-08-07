@@ -2,6 +2,11 @@
 """
 Getting Started Script for MediaWiki Development Toolkit
 Interactive setup and tool selection guide
+
+Author: Johan Sörell
+Contact: https://github.com/J-SirL | https://se.linkedin.com/in/johansorell | automationblueprint.site
+Date: 2025
+Version: 1.0.0
 """
 
 import os

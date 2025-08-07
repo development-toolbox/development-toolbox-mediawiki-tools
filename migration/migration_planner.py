@@ -11,7 +11,8 @@ Features:
 - Identification of high-risk content requiring manual attention
 - Detailed reporting with actionable recommendations
 
-Author: Development Toolbox Team
+Author: Johan Sörell
+Contact: https://github.com/J-SirL | https://se.linkedin.com/in/johansorell | automationblueprint.site
 Date: August 2025
 Version: 1.0.0
 """

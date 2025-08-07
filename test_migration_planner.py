@@ -10,8 +10,9 @@ This test suite validates all aspects of the migration_planner module including:
 - Integration testing
 - Error handling testing
 
-Author: Development Toolbox Team
-Date: August 2025
+Author: Johan Sörell
+Contact: https://github.com/J-SirL | https://se.linkedin.com/in/johansorell | automationblueprint.site
+Date: 2025
 Version: 1.0.0
 """
 

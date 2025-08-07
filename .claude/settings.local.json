@@ -8,7 +8,9 @@
       "Bash(python:*)",
       "Bash(mkdir:*)",
       "Bash(pip install:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "WebFetch(domain:development-toolbox.github.io)"
     ],
     "deny": []
   }
