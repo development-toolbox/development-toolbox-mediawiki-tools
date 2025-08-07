@@ -60,9 +60,9 @@
         /* Theme Toggle */
         .theme-toggle {
             position: fixed;
-            top: 20px;
+            top: 80px;
             right: 24px;
-            z-index: 1000;
+            z-index: 99;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 20px;
@@ -148,6 +148,34 @@
             align-items: center;
             justify-content: space-between;
             height: 64px;
+        }
+
+        .ant-menu {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .ant-menu-item {
+            padding: 8px 16px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            color: var(--text-secondary);
+            transition: all 0.3s;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .ant-menu-item:hover {
+            color: var(--primary-color);
+            background: var(--bg-light);
+        }
+
+        .ant-menu-item.active {
+            color: var(--primary-color);
+            background: rgba(24, 144, 255, 0.1);
         }
 
         .ant-layout-content {
@@ -294,9 +322,15 @@
     <div class="ant-layout">
         <header class="ant-layout-header">
             <div>
-                <h3 style="margin: 0; color: var(--primary-color);">🛠️ MediaWiki Migration Tools Reference</h3>
+                <h3 class="ant-typography text-primary" style="margin: 0;">🛠️ MediaWiki Migration Tools Reference</h3>
             </div>
-            <a href="index.html" class="ant-btn">🏠 Back to Overview</a>
+            <nav class="ant-menu">
+                <a class="ant-menu-item" href="index.html">🏠 Overview</a>
+                <a class="ant-menu-item active" href="tools-reference.html">📍 Reference</a>
+                <a class="ant-menu-item" href="complete-migration-guide.html">📚 Guides</a>
+                <a class="ant-menu-item" href="content-conversion-examples.html">💡 Examples</a>
+                <a class="ant-menu-item" href="repolist.html">📂 Repository</a>
+            </nav>
         </header>
 
         <main class="ant-layout-content">

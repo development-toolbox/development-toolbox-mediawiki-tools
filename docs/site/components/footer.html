@@ -1,0 +1,57 @@
+    </div>
+
+<!-- Floating Navigation Buttons -->
+<div class="floating-buttons">
+    <a href="index.html" class="floating-btn" title="Home">🏠</a>
+    <button onclick="scrollToTop()" class="floating-btn" title="Back to Top">↑</button>
+</div>
+
+<script>
+    // Theme Toggle Functions
+    function setTheme(theme) {
+        const body = document.body;
+        const lightBtn = document.getElementById('light-theme');
+        const darkBtn = document.getElementById('dark-theme');
+        
+        if (theme === 'dark') {
+            body.classList.add('dark');
+            lightBtn.classList.remove('active');
+            darkBtn.classList.add('active');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            body.classList.remove('dark');
+            lightBtn.classList.add('active');
+            darkBtn.classList.remove('active');
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // Initialize theme from localStorage on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setTheme('dark');
+        }
+    });
+
+    // Scroll to top function
+    function scrollToTop() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    // Set active menu item based on current page
+    document.addEventListener('DOMContentLoaded', function() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const menuItems = document.querySelectorAll('.ant-menu-item');
+        
+        menuItems.forEach(item => {
+            item.classList.remove('active');
+            if (item.getAttribute('href') === currentPage) {
+                item.classList.add('active');
+            }
+        });
+    });
+</script>
