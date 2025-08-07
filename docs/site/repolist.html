@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Johan Sörell's Repository Catalogue - MediaWiki Tools</title>
+<title>Development Toolbox Repository Catalogue - MediaWiki Tools</title>
 <style>
 /* Ant Design inspired CSS variables and base styles */
 :root {
@@ -23,12 +23,101 @@
     --bg-light: #fafafa;
     --bg-card: #ffffff;
 }
+
+body.dark {
+    --primary-color: #177ddc;
+    --primary-hover: #095cb5;
+    --success-color: #49aa19;
+    --warning-color: #d48806;
+    --error-color: #cf1322;
+    --text-primary: rgba(255, 255, 255, 0.85);
+    --text-secondary: rgba(255, 255, 255, 0.65);
+    --border-color: #303030;
+    --bg-color: #141414;
+    --bg-light: #0a0a0a;
+    --bg-card: #1f1f1f;
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { 
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif; 
     line-height: 1.5715; 
     color: var(--text-primary); 
-    background: var(--bg-light); 
+    background: var(--bg-light);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 24px;
+    z-index: 1000;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+}
+
+.theme-toggle:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle button {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+    color: var(--text-secondary);
+}
+
+.theme-toggle button:hover {
+    background: var(--bg-light);
+    color: var(--text-primary);
+}
+
+.theme-toggle button.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Back to Top and Home buttons */
+.floating-buttons {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.floating-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floating-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 .header { 
     background: var(--bg-color); 
@@ -162,9 +251,15 @@ body {
 </style>
 </head>
 <body>
+<!-- Theme Toggle -->
+<div class="theme-toggle">
+    <button id="light-theme" class="active" onclick="setTheme('light')" title="Light theme">☀️</button>
+    <button id="dark-theme" onclick="setTheme('dark')" title="Dark theme">🌙</button>
+</div>
+
 <div class="header">
     <div class="header-content">
-        <h1>📂 Johan Sörell's Repository Catalogue</h1>
+        <h1>📂 Development Toolbox Repository Catalogue</h1>
         <p>Comprehensive collection of development tools, utilities, and automation scripts</p>
         <a href="index.html" class="back-btn">← Back to MediaWiki Tools</a>
     </div>
@@ -279,5 +374,48 @@ body {
 
 </div>
 </div>
+
+<!-- Floating Navigation Buttons -->
+<div class="floating-buttons">
+    <a href="index.html" class="floating-btn" title="Home">🏠</a>
+    <button onclick="scrollToTop()" class="floating-btn" title="Back to Top">↑</button>
+</div>
+
+<script>
+// Theme Toggle Functions
+function setTheme(theme) {
+    const body = document.body;
+    const lightBtn = document.getElementById('light-theme');
+    const darkBtn = document.getElementById('dark-theme');
+    
+    if (theme === 'dark') {
+        body.classList.add('dark');
+        lightBtn.classList.remove('active');
+        darkBtn.classList.add('active');
+        localStorage.setItem('theme', 'dark');
+    } else {
+        body.classList.remove('dark');
+        lightBtn.classList.add('active');
+        darkBtn.classList.remove('active');
+        localStorage.setItem('theme', 'light');
+    }
+}
+
+// Initialize theme from localStorage on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        setTheme('dark');
+    }
+});
+
+// Scroll to top function
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+</script>
 </body>
 </html>

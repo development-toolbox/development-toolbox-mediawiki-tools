@@ -8,3 +8,5 @@ node_modules
 *.log
 .venv/
 .venv/*
+.mypy_cache
+.pytest_cache

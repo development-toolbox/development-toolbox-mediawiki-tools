@@ -24,6 +24,28 @@
             --bg-color: #ffffff;
             --bg-light: #fafafa;
             --bg-card: #ffffff;
+            --code-bg: #f5f5f5;
+            --code-text: #24292e;
+        }
+
+        body.dark {
+            --primary-color: #177ddc;
+            --primary-hover: #095cb5;
+            --primary-active: #003a8c;
+            --success-color: #49aa19;
+            --warning-color: #d48806;
+            --error-color: #cf1322;
+            --info-color: #177ddc;
+            --text-primary: rgba(255, 255, 255, 0.85);
+            --text-secondary: rgba(255, 255, 255, 0.65);
+            --text-disabled: rgba(255, 255, 255, 0.25);
+            --border-color: #303030;
+            --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+            --bg-color: #141414;
+            --bg-light: #0a0a0a;
+            --bg-card: #1f1f1f;
+            --code-bg: #0d1117;
+            --code-text: #c9d1d9;
         }
 
         * {
@@ -37,6 +59,46 @@
             line-height: 1.5715;
             color: var(--text-primary);
             background-color: var(--bg-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 24px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 6px;
+            box-shadow: var(--box-shadow);
+            transition: all 0.3s;
+        }
+
+        .theme-toggle:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .theme-toggle button {
+            background: none;
+            border: none;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            color: var(--text-secondary);
+        }
+
+        .theme-toggle button:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
+        }
+
+        .theme-toggle button.active {
+            background: var(--primary-color);
+            color: white;
         }
 
         /* Layout Components */
@@ -241,6 +303,17 @@
 
         .ant-card:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .tool-features {
+            margin-top: 12px;
+            padding-top: 8px;
+            border-top: 1px solid #f0f0f0;
         }
 
         .ant-card-head {
@@ -538,11 +611,20 @@
 
         /* Code styling */
         .ant-typography code {
-            background: #f5f5f5;
+            background: var(--code-bg);
+            color: var(--code-text);
             padding: 2px 6px;
             border-radius: 3px;
             font-size: 13px;
-            border: 1px solid #e8e8e8;
+            border: 1px solid var(--border-color);
+        }
+
+        pre {
+            background: var(--code-bg);
+            color: var(--code-text);
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
         }
 
         /* Responsive */
@@ -589,6 +671,12 @@
     </style>
 </head>
 <body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button id="light-theme" class="active" onclick="setTheme('light')" title="Light theme">☀️</button>
+        <button id="dark-theme" onclick="setTheme('dark')" title="Dark theme">🌙</button>
+    </div>
+
     <div class="ant-layout">
         <!-- Header -->
         <header class="ant-layout-header">
@@ -622,9 +710,6 @@
                             <button class="ant-btn ant-btn-primary ant-btn-large" onclick="showSection('quick-start')">
                                 Get Started
                             </button>
-                            <a class="ant-btn ant-btn-large" href="content-conversion-examples.html" target="_blank">
-                                View Examples
-                            </a>
                             <a class="ant-btn ant-btn-large" href="complete-migration-guide.html" target="_blank">
                                 Complete Guide
                             </a>
@@ -632,71 +717,68 @@
                     </div>
                 </div>
 
-                <!-- Features Section -->
+                <!-- Tools Section -->
                 <div style="padding: 80px 0; background: #fafafa;">
                     <div class="container">
-                        <h2 class="ant-typography text-center mb-48">🎯 Key Features</h2>
+                        <h2 class="ant-typography text-center mb-48">🛠️ Migration Tools</h2>
                         <div class="ant-row">
-                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-8">
-                                <div class="ant-card text-center">
-                                    <div class="ant-card-body">
-                                        <div class="feature-icon">🔄</div>
-                                        <h4 class="ant-typography">Automated Migration</h4>
-                                        <span class="ant-tag ant-tag-success">✅ Complete</span>
-                                        <p class="text-secondary">Convert Azure DevOps Wiki content to MediaWiki syntax automatically</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-8">
-                                <div class="ant-card text-center">
-                                    <div class="ant-card-body">
-                                        <div class="feature-icon">👀</div>
-                                        <h4 class="ant-typography">Content Preview</h4>
-                                        <span class="ant-tag ant-tag-success">✅ Complete</span>
-                                        <p class="text-secondary">Preview how your content will look before migration</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-8">
-                                <div class="ant-card text-center">
-                                    <div class="ant-card-body">
-                                        <div class="feature-icon">📊</div>
-                                        <h4 class="ant-typography">Migration Analysis</h4>
-                                        <span class="ant-tag ant-tag-success">✅ Complete</span>
-                                        <p class="text-secondary">Analyze your content structure and migration complexity</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-8">
-                                <div class="ant-card text-center">
-                                    <div class="ant-card-body">
-                                        <div class="feature-icon">🎨</div>
-                                        <h4 class="ant-typography">Template Management</h4>
-                                        <span class="ant-tag ant-tag-warning">🚧 In Progress</span>
-                                        <p class="text-secondary">Import and manage MediaWiki templates and infoboxes</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-8">
-                                <div class="ant-card text-center">
+                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-6">
+                                <div class="ant-card text-center tool-card" onclick="showSection('tools')" style="cursor: pointer;">
                                     <div class="ant-card-body">
                                         <div class="feature-icon">🔍</div>
-                                        <h4 class="ant-typography">Content Validation</h4>
+                                        <h4 class="ant-typography">Migration Planner</h4>
+                                        <span class="ant-tag ant-tag-success">✅ Ready</span>
+                                        <p class="text-secondary">Analyse your Azure DevOps Wiki structure and estimate migration complexity</p>
+                                        <div class="tool-features">
+                                            <small class="text-secondary">• Content analysis • Time estimation • Risk assessment</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-6">
+                                <div class="ant-card text-center tool-card" onclick="showSection('tools')" style="cursor: pointer;">
+                                    <div class="ant-card-body">
+                                        <div class="feature-icon">👀</div>
+                                        <h4 class="ant-typography">Content Previewer</h4>
+                                        <span class="ant-tag ant-tag-success">✅ Ready</span>
+                                        <p class="text-secondary">Preview how your content will convert before running the migration</p>
+                                        <div class="tool-features">
+                                            <small class="text-secondary">• Side-by-side comparison • Interactive preview • Export to HTML</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-6">
+                                <div class="ant-card text-center tool-card" onclick="showSection('tools')" style="cursor: pointer;">
+                                    <div class="ant-card-body">
+                                        <div class="feature-icon">🚀</div>
+                                        <h4 class="ant-typography">Azure DevOps Migrator</h4>
+                                        <span class="ant-tag ant-tag-success">✅ Ready</span>
+                                        <p class="text-secondary">Main migration tool for Azure DevOps Wiki to MediaWiki content transfer</p>
+                                        <div class="tool-features">
+                                            <small class="text-secondary">• Batch processing • Error recovery • Progress tracking</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-6">
+                                <div class="ant-card text-center tool-card" onclick="showSection('tools')" style="cursor: pointer;">
+                                    <div class="ant-card-body">
+                                        <div class="feature-icon">🔧</div>
+                                        <h4 class="ant-typography">Validation Tool</h4>
                                         <span class="ant-tag ant-tag-warning">🚧 In Progress</span>
                                         <p class="text-secondary">Validate migrated content for accuracy and completeness</p>
+                                        <div class="tool-features">
+                                            <small class="text-secondary">• Content verification • Link validation • Quality reports</small>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="ant-col ant-col-xs-24 ant-col-md-12 ant-col-lg-8">
-                                <div class="ant-card text-center">
-                                    <div class="ant-card-body">
-                                        <div class="feature-icon">⚡</div>
-                                        <h4 class="ant-typography">Bulk Operations</h4>
-                                        <span class="ant-tag ant-tag-default">📅 Planned</span>
-                                        <p class="text-secondary">Process multiple pages and wikis efficiently</p>
-                                    </div>
-                                </div>
-                            </div>
+                        </div>
+                        <div class="text-center mt-32">
+                            <button class="ant-btn ant-btn-primary ant-btn-large" onclick="showSection('tools')">
+                                Explore All Tools
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1197,11 +1279,11 @@
                         <div class="ant-row">
                             <div class="ant-col ant-col-xs-24 ant-col-lg-8">
                                 <div class="ant-card ant-card-hoverable">
-                                    <div class="ant-card-head">🎯 Live Conversion Examples</div>
+                                    <div class="ant-card-head">🔧 Conversion Reference Guide</div>
                                     <div class="ant-card-body">
-                                        <p class="text-secondary mb-16">Interactive side-by-side comparisons</p>
+                                        <p class="text-secondary mb-16">Before/after examples with manual fix guidance</p>
                                         <div class="space-vertical">
-                                            <strong>Available examples:</strong>
+                                            <strong>Content types covered:</strong>
                                             <ul style="margin: 8px 0; padding-left: 20px; font-size: 14px;">
                                                 <li>Basic markdown conversion</li>
                                                 <li>Complex tables and lists</li>
@@ -1210,47 +1292,54 @@
                                                 <li>Links and cross-references</li>
                                                 <li>Templates and macros</li>
                                             </ul>
+                                            <strong style="margin-top: 12px; display: block;">Manual fix patterns:</strong>
+                                            <ul style="margin: 8px 0; padding-left: 20px; font-size: 14px; color: var(--text-secondary);">
+                                                <li>Common formatting issues</li>
+                                                <li>Table alignment problems</li>
+                                                <li>Link reference updates</li>
+                                                <li>Template parameter mapping</li>
+                                            </ul>
                                         </div>
                                         <div class="ant-statistic-group mt-16">
                                             <div class="ant-statistic">
                                                 <div class="ant-statistic-value" style="color: #52c41a;">15+</div>
-                                                <div class="ant-statistic-title">Conversion Examples</div>
+                                                <div class="ant-statistic-title">Fix Examples</div>
                                             </div>
                                         </div>
-                                        <a class="ant-btn ant-btn-primary mt-16" href="content-conversion-examples.html" target="_blank">View Examples</a>
+                                        <a class="ant-btn ant-btn-primary mt-16" href="content-conversion-examples.html" target="_blank">View Reference</a>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="ant-col ant-col-xs-24 ant-col-lg-8">
                                 <div class="ant-card ant-card-hoverable">
-                                    <div class="ant-card-head">🏢 Enterprise Case Studies</div>
+                                    <div class="ant-card-head">📊 Content Analysis Examples</div>
                                     <div class="ant-card-body">
-                                        <p class="text-secondary mb-16">Real migration success stories</p>
+                                        <p class="text-secondary mb-16">See how the tools analyse different content types</p>
                                         <div class="space-vertical">
                                             <div class="ant-card ant-card-small mb-12" style="background: #f6ffed; border: 1px solid #b7eb8f;">
                                                 <div class="ant-card-body" style="padding: 12px;">
-                                                    <strong>TechCorp Inc.</strong>
-                                                    <div style="font-size: 12px; color: #666;">500+ pages migrated in 2 days</div>
-                                                    <div style="font-size: 12px; margin-top: 4px;">✅ 99.8% content accuracy</div>
+                                                    <strong>Simple Text Pages</strong>
+                                                    <div style="font-size: 12px; color: #666;">Complexity: Low</div>
+                                                    <div style="font-size: 12px; margin-top: 4px;">✅ 99%+ conversion accuracy</div>
                                                 </div>
                                             </div>
                                             <div class="ant-card ant-card-small mb-12" style="background: #e6f7ff; border: 1px solid #91d5ff;">
                                                 <div class="ant-card-body" style="padding: 12px;">
-                                                    <strong>GlobalSoft Ltd.</strong>
-                                                    <div style="font-size: 12px; color: #666;">1200+ pages, complex templates</div>
-                                                    <div style="font-size: 12px; margin-top: 4px;">✅ Zero downtime migration</div>
+                                                    <strong>Tables & Lists</strong>
+                                                    <div style="font-size: 12px; color: #666;">Complexity: Medium</div>
+                                                    <div style="font-size: 12px; margin-top: 4px;">✅ 95% conversion accuracy</div>
                                                 </div>
                                             </div>
                                             <div class="ant-card ant-card-small" style="background: #fff2e8; border: 1px solid #ffbb96;">
                                                 <div class="ant-card-body" style="padding: 12px;">
-                                                    <strong>DevTeam Pro</strong>
-                                                    <div style="font-size: 12px; color: #666;">300+ pages with custom macros</div>
-                                                    <div style="font-size: 12px; margin-top: 4px;">✅ Full automation achieved</div>
+                                                    <strong>Complex Formatting</strong>
+                                                    <div style="font-size: 12px; color: #666;">Complexity: High</div>
+                                                    <div style="font-size: 12px; margin-top: 4px;">⚠️ May require manual review</div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a class="ant-btn mt-16" href="./case-studies/README.md" target="_blank">Read Case Studies</a>
+                                        <a class="ant-btn mt-16" href="content-conversion-examples.html" target="_blank">View Analysis Examples</a>
                                     </div>
                                 </div>
                             </div>
@@ -1303,68 +1392,62 @@
 
                         <div class="ant-divider"></div>
 
-                        <h3 class="ant-typography">🎬 Interactive Demos</h3>
+                        <h3 class="ant-typography">🛠️ Getting Started Examples</h3>
                         <div class="ant-row">
                             <div class="ant-col ant-col-xs-24 ant-col-md-12">
                                 <div class="ant-card">
-                                    <div class="ant-card-head">🖥️ Command Line Demos</div>
+                                    <div class="ant-card-head">📝 Command Line Usage</div>
                                     <div class="ant-card-body">
-                                        <p class="text-secondary mb-16">Watch step-by-step command demonstrations</p>
+                                        <p class="text-secondary mb-16">Real command examples you can copy and use</p>
                                         <div class="space-vertical">
                                             <div style="background: #001529; color: #fff; padding: 16px; border-radius: 6px; font-family: monospace; font-size: 12px; margin: 12px 0;">
-                                                <div style="color: #40a9ff;">$ python azure_devops_migrator.py --help</div>
-                                                <div style="color: #73d13d; margin-top: 4px;">✅ Azure DevOps Wiki Migration Tool</div>
-                                                <div style="color: #ffa940; margin-top: 4px;">📋 Usage: python azure_devops_migrator.py [options]</div>
+                                                <div style="color: #40a9ff;">$ python migration_planner.py --wiki "MyWiki"</div>
+                                                <div style="color: #73d13d; margin-top: 4px;">✅ Analysing wiki structure...</div>
+                                                <div style="color: #ffa940; margin-top: 4px;">📋 Found 150 pages, estimated 2 hours</div>
                                             </div>
                                             <ul style="margin: 8px 0; padding-left: 20px; font-size: 14px;">
-                                                <li>Basic migration workflow</li>
-                                                <li>Advanced configuration options</li>
-                                                <li>Error handling demonstrations</li>
-                                                <li>Performance optimization tips</li>
+                                                <li>Plan your migration strategy</li>
+                                                <li>Preview content conversion</li>
+                                                <li>Run dry-run tests first</li>
+                                                <li>Validate results afterwards</li>
                                             </ul>
                                         </div>
-                                        <a class="ant-btn" href="./demos/cli-demo.html" target="_blank">Watch Demo</a>
+                                        <a class="ant-btn" href="complete-migration-guide.html" target="_blank">View Full Guide</a>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="ant-col ant-col-xs-24 ant-col-md-12">
                                 <div class="ant-card">
-                                    <div class="ant-card-head">📊 Migration Dashboard</div>
+                                    <div class="ant-card-head">🔧 Common Migration Patterns</div>
                                     <div class="ant-card-body">
-                                        <p class="text-secondary mb-16">Real-time migration progress tracking</p>
+                                        <p class="text-secondary mb-16">Typical workflows and best practices</p>
                                         <div class="space-vertical">
-                                            <div class="ant-progress-group">
-                                                <div class="ant-progress">
-                                                    <div class="ant-progress-text">Content Analysis</div>
-                                                    <div class="ant-progress-line">
-                                                        <div class="ant-progress-bg" style="width: 100%; background: #52c41a;"></div>
+                                            <div class="ant-timeline">
+                                                <div class="ant-timeline-item">
+                                                    <div class="ant-timeline-item-head"></div>
+                                                    <div class="ant-timeline-item-content">
+                                                        <strong>1. Plan & Analyse</strong><br>
+                                                        <small class="text-secondary">Run migration_planner.py to understand your content</small>
                                                     </div>
-                                                    <div class="ant-progress-text">100%</div>
                                                 </div>
-                                                <div class="ant-progress">
-                                                    <div class="ant-progress-text">Migration</div>
-                                                    <div class="ant-progress-line">
-                                                        <div class="ant-progress-bg" style="width: 75%; background: #1890ff;"></div>
+                                                <div class="ant-timeline-item">
+                                                    <div class="ant-timeline-item-head"></div>
+                                                    <div class="ant-timeline-item-content">
+                                                        <strong>2. Preview & Test</strong><br>
+                                                        <small class="text-secondary">Use content_previewer.py for sample pages</small>
                                                     </div>
-                                                    <div class="ant-progress-text">75%</div>
                                                 </div>
-                                                <div class="ant-progress">
-                                                    <div class="ant-progress-text">Validation</div>
-                                                    <div class="ant-progress-line">
-                                                        <div class="ant-progress-bg" style="width: 45%; background: #faad14;"></div>
+                                                <div class="ant-timeline-item">
+                                                    <div class="ant-timeline-item-head"></div>
+                                                    <div class="ant-timeline-item-content">
+                                                        <strong>3. Migrate & Validate</strong><br>
+                                                        <small class="text-secondary">Execute migration with validation checks</small>
                                                     </div>
-                                                    <div class="ant-progress-text">45%</div>
                                                 </div>
-                                            </div>
-                                            <ul style="margin: 12px 0; padding-left: 20px; font-size: 14px;">
-                                                <li>Real-time progress monitoring</li>
-                                                <li>Error tracking and reporting</li>
-                                                <li>Performance metrics</li>
-                                                <li>Completion estimates</li>
                                             </div>
                                         </div>
-                                        <a class="ant-btn" href="./demos/dashboard-demo.html" target="_blank">View Dashboard</a>
+                                        <button class="ant-btn" onclick="showSection('tools')">Explore Tools</button>
                                     </div>
                                 </div>
                             </div>
@@ -1553,6 +1636,33 @@ migrator = WikiMigrator(processor=MyCustomProcessor())
                 }
             });
         }
+
+        // Theme Toggle Functions
+        function setTheme(theme) {
+            const body = document.body;
+            const lightBtn = document.getElementById('light-theme');
+            const darkBtn = document.getElementById('dark-theme');
+            
+            if (theme === 'dark') {
+                body.classList.add('dark');
+                lightBtn.classList.remove('active');
+                darkBtn.classList.add('active');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark');
+                lightBtn.classList.add('active');
+                darkBtn.classList.remove('active');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Initialize theme from localStorage on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                setTheme('dark');
+            }
+        });
     </script>
 </body>
 </html>
