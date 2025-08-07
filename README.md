@@ -12,7 +12,7 @@ This repository is one component of that larger ecosystem.
 
 <!-- REPO_LIST_START -->
 For an interactive, browsable catalogue of all public repositories, you can view:
-- **Live (GitHub Pages):** [Repo Catalogue](https://development-toolbox.github.io/development-toolbox-mediawiki-tools/repolist.html)
+- **Live (GitHub Pages):** [Repo Catalogue](https://development-toolbox.github.io/development-toolbox-mediawiki-tools/docs/site/repolist.html)
 - **Local preview:** [Repo Catalogue](docs/site/repolist.html)
 
 To re regenerate Repo Catalogue locally  run:

@@ -67,13 +67,49 @@
             position: fixed;
             top: 20px;
             right: 24px;
-            z-index: 1000;
+            z-index: 1001;
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 6px;
             box-shadow: var(--box-shadow);
             transition: all 0.3s;
+            pointer-events: auto;
+        }
+
+        /* Ensure theme toggle doesn't interfere with scrollable content */
+        @media (max-width: 768px) {
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 4px;
+            }
+        }
+
+        /* Add margin to ensure content isn't hidden behind theme toggle */
+        .ant-layout-header {
+            padding-right: 120px;
+        }
+
+        @media (max-width: 768px) {
+            .ant-layout-header {
+                padding-right: 80px;
+            }
+        }
+
+        /* Fix dark mode theme toggle button visibility */
+        body.dark .theme-toggle {
+            background: var(--bg-card);
+            border-color: var(--border-color);
+        }
+        
+        body.dark .theme-toggle button {
+            color: var(--text-secondary);
+        }
+        
+        body.dark .theme-toggle button:hover {
+            background: var(--bg-light);
+            color: var(--text-primary);
         }
 
         .theme-toggle:hover {
@@ -668,6 +704,47 @@
             flex-direction: column;
             gap: 8px;
         }
+
+        /* Tabs styling */
+        .ant-tabs {
+            margin-top: 16px;
+        }
+
+        .ant-tabs-tab-bar {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
+        }
+
+        .ant-tabs-tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .ant-tabs-tab:hover {
+            color: var(--primary-color);
+        }
+
+        .ant-tabs-tab-active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .ant-tabs-content {
+            padding: 0;
+        }
+
+        .ant-tabs-tabpane {
+            display: none;
+        }
+
+        .ant-tabs-tabpane-active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -690,6 +767,8 @@
                 <a class="ant-menu-item" href="tools-reference.html" target="_blank">📋 Reference</a>
                 <button class="ant-menu-item" onclick="showSection('guides')">📚 Guides</button>
                 <button class="ant-menu-item" onclick="showSection('examples')">💡 Examples</button>
+                <button class="ant-menu-item" onclick="showSection('getting-started-docs')">🚀 Setup Script</button>
+                <button class="ant-menu-item" onclick="showSection('planned-features')">🎯 Roadmap</button>
                 <button class="ant-menu-item" onclick="showSection('support')">🤝 Support</button>
                 <a class="ant-menu-item" href="repolist.html" target="_blank">📂 Repositories</a>
             </nav>
@@ -783,29 +862,27 @@
                     </div>
                 </div>
 
-                <!-- What's New Section -->
+                <!-- Current Status Section -->
                 <div style="padding: 80px 0;">
                     <div class="container">
-                        <h2 class="ant-typography text-center mb-48">📈 What's New</h2>
+                        <h2 class="ant-typography text-center mb-48">📊 Current Status</h2>
                         <div class="ant-row">
-                            <div class="ant-col ant-col-xs-24 ant-col-lg-6">
+                            <div class="ant-col ant-col-xs-24 ant-col-lg-8">
                                 <div class="ant-alert ant-alert-success mb-16">
-                                    <div class="ant-alert-message">🎉 Enhanced Content Conversion</div>
-                                    <div>Improved conversion accuracy for complex tables, code blocks, and nested lists. Now supports 95% automated conversion for most content types.</div>
-                                </div>
-                                <div class="ant-alert ant-alert-info">
-                                    <div class="ant-alert-message">🚀 New Preview System</div>
-                                    <div>Interactive preview system lets you see exactly how your content will appear in MediaWiki before migration.</div>
+                                    <div class="ant-alert-message">✅ Available Tools</div>
+                                    <div>Core migration tools are ready: migration_planner.py, content_previewer.py, azure_devops_migrator.py, and validation_tool.py. These provide the essential functionality for Azure DevOps Wiki to MediaWiki migration.</div>
                                 </div>
                             </div>
-                            <div class="ant-col ant-col-xs-24 ant-col-lg-6">
-                                <div class="ant-alert ant-alert-warning mb-16">
-                                    <div class="ant-alert-message">🛠️ Template Import Tool</div>
-                                    <div>New tool for importing and converting MediaWiki templates from existing wikis. Currently in beta testing.</div>
+                            <div class="ant-col ant-col-xs-24 ant-col-lg-8">
+                                <div class="ant-alert ant-alert-info mb-16">
+                                    <div class="ant-alert-message">🚧 In Development</div>
+                                    <div>Enhanced template management, automated backup systems, and advanced analytics are currently being developed. Check our roadmap for planned features.</div>
                                 </div>
-                                <div class="ant-alert ant-alert-info">
-                                    <div class="ant-alert-message">📊 Advanced Analytics</div>
-                                    <div>Detailed migration reports and analytics to track progress and identify potential issues.</div>
+                            </div>
+                            <div class="ant-col ant-col-xs-24 ant-col-lg-8">
+                                <div class="ant-alert ant-alert-warning">
+                                    <div class="ant-alert-message">⚠️ Beta Status</div>
+                                    <div>This toolkit is in active development. While core functionality is stable, always test with non-production data first and maintain backups.</div>
                                 </div>
                             </div>
                         </div>
@@ -1032,17 +1109,16 @@
 
                         <div class="ant-divider"></div>
 
-                        <h3 class="ant-typography">🔧 Utility Tools</h3>
+                        <h3 class="ant-typography">🔧 Available Utility Tools</h3>
                         <div class="ant-row">
                             <div class="ant-col ant-col-xs-24 ant-col-md-12">
                                 <div class="ant-card ant-card-small">
-                                    <div class="ant-card-head">📊 Analytics & Reporting</div>
+                                    <div class="ant-card-head">✅ Ready to Use</div>
                                     <div class="ant-card-body">
                                         <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
-                                            <li><code>migration_analytics.py</code> - Generate detailed migration reports</li>
-                                            <li><code>content_analyzer.py</code> - Analyze content complexity and patterns</li>
-                                            <li><code>performance_monitor.py</code> - Monitor migration performance</li>
-                                            <li><code>quality_checker.py</code> - Validate migrated content quality</li>
+                                            <li><code>getting_started.py</code> - Interactive setup and environment configuration</li>
+                                            <li><code>validation_tool.py</code> - Validate migrated content accuracy</li>
+                                            <li><code>mediawiki_import.py</code> - Basic MediaWiki template import</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -1050,14 +1126,15 @@
 
                             <div class="ant-col ant-col-xs-24 ant-col-md-12">
                                 <div class="ant-card ant-card-small">
-                                    <div class="ant-card-head">🛠️ Maintenance & Support</div>
+                                    <div class="ant-card-head">🚧 Planned Features</div>
                                     <div class="ant-card-body">
                                         <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
-                                            <li><code>backup_manager.py</code> - Create and manage backups</li>
-                                            <li><code>link_validator.py</code> - Validate and fix broken links</li>
-                                            <li><code>cleanup_tool.py</code> - Clean up temporary files and logs</li>
-                                            <li><code>health_checker.py</code> - System health monitoring</li>
+                                            <li><code>backup_manager.py</code> - Automated backup management</li>
+                                            <li><code>link_validator.py</code> - Comprehensive link validation</li>
+                                            <li><code>migration_analytics.py</code> - Advanced reporting dashboard</li>
+                                            <li><code>performance_monitor.py</code> - Real-time migration monitoring</li>
                                         </ul>
+                                        <p class="text-secondary" style="margin: 8px 0 0 0; font-size: 12px;">These tools are in development. Check our <a href="#" onclick="showSection('planned-features')">planned features</a> section for progress updates.</p>
                                     </div>
                                 </div>
                             </div>
@@ -1123,7 +1200,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <a class="ant-btn ant-btn-primary mt-16" href="./docs/QUICK-START.md" target="_blank">Start Guide</a>
+                                        <button class="ant-btn ant-btn-primary mt-16" onclick="showSection('quick-start')">Start Guide</button>
                                     </div>
                                 </div>
                             </div>
@@ -1178,26 +1255,26 @@
                                             <strong>Available guides:</strong>
                                             <div class="ant-list ant-list-small mt-12">
                                                 <div class="ant-list-item">
-                                                    <a href="./docs/HOW-TO-GUIDES.md#batch-processing" target="_blank">🔄 Batch Processing</a>
+                                                    <a href="../src/HOW-TO-GUIDES.md#batch-processing" target="_blank">🔄 Batch Processing</a>
                                                 </div>
                                                 <div class="ant-list-item">
-                                                    <a href="./docs/HOW-TO-GUIDES.md#error-handling" target="_blank">⚠️ Error Recovery</a>
+                                                    <a href="../src/HOW-TO-GUIDES.md#error-handling" target="_blank">⚠️ Error Recovery</a>
                                                 </div>
                                                 <div class="ant-list-item">
-                                                    <a href="./docs/HOW-TO-GUIDES.md#custom-templates" target="_blank">🎨 Custom Templates</a>
+                                                    <a href="../src/HOW-TO-GUIDES.md#custom-templates" target="_blank">🎨 Custom Templates</a>
                                                 </div>
                                                 <div class="ant-list-item">
-                                                    <a href="./docs/HOW-TO-GUIDES.md#link-management" target="_blank">🔗 Link Management</a>
+                                                    <a href="../src/HOW-TO-GUIDES.md#link-management" target="_blank">🔗 Link Management</a>
                                                 </div>
                                                 <div class="ant-list-item">
-                                                    <a href="./docs/HOW-TO-GUIDES.md#performance-tuning" target="_blank">⚡ Performance Tuning</a>
+                                                    <a href="../src/HOW-TO-GUIDES.md#performance-tuning" target="_blank">⚡ Performance Tuning</a>
                                                 </div>
                                                 <div class="ant-list-item">
-                                                    <a href="./docs/HOW-TO-GUIDES.md#backup-restore" target="_blank">💾 Backup & Restore</a>
+                                                    <a href="../src/HOW-TO-GUIDES.md#backup-restore" target="_blank">💾 Backup & Restore</a>
                                                 </div>
                                             </div>
                                         </div>
-                                        <a class="ant-btn mt-16" href="./docs/HOW-TO-GUIDES.md" target="_blank">All How-To's</a>
+                                        <a class="ant-btn mt-16" href="../src/HOW-TO-GUIDES.md" target="_blank">All How-To's</a>
                                     </div>
                                 </div>
                             </div>
@@ -1384,7 +1461,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <a class="ant-btn mt-16" href="./templates/README.md" target="_blank">Browse Templates</a>
+                                        <a class="ant-btn mt-16" href="../../templates/README.md" target="_blank">Browse Templates</a>
                                     </div>
                                 </div>
                             </div>
@@ -1468,50 +1545,67 @@
                                         <div id="code-basic" class="ant-tabs-tabpane ant-tabs-tabpane-active">
                                             <div style="background: #f6f8fa; padding: 16px; border-radius: 6px; font-family: monospace; font-size: 14px; margin: 16px 0;">
 <pre style="margin: 0; color: #24292e;">
-<span style="color: #d73a49;">from</span> azure_devops_migrator <span style="color: #d73a49;">import</span> WikiMigrator
+<span style="color: #6f42c1;"># Basic usage example - Command line tools</span>
 
-<span style="color: #6f42c1;"># Initialize migrator</span>
-migrator = WikiMigrator(
-    azure_url=<span style="color: #032f62;">"https://dev.azure.com/yourorg"</span>,
-    mediawiki_url=<span style="color: #032f62;">"https://wiki.yourorg.com"</span>
-)
+<span style="color: #6f42c1;"># 1. Analyse your Azure DevOps Wiki</span>
+python migration/migration_planner.py --wiki "YourWikiName"
 
-<span style="color: #6f42c1;"># Run migration</span>
-migrator.migrate_all()
+<span style="color: #6f42c1;"># 2. Preview content conversion</span>
+python migration/content_previewer.py --page "YourPageName"
+
+<span style="color: #6f42c1;"># 3. Run migration with dry-run first</span>
+python migration/azure_devops_migrator.py --wiki "YourWikiName" --dry-run
+
+<span style="color: #6f42c1;"># 4. Execute actual migration</span>
+python migration/azure_devops_migrator.py --wiki "YourWikiName"
 </pre>
                                             </div>
                                         </div>
                                         <div id="code-advanced" class="ant-tabs-tabpane" style="display: none;">
                                             <div style="background: #f6f8fa; padding: 16px; border-radius: 6px; font-family: monospace; font-size: 14px; margin: 16px 0;">
 <pre style="margin: 0; color: #24292e;">
-<span style="color: #d73a49;">from</span> azure_devops_migrator <span style="color: #d73a49;">import</span> WikiMigrator, Config
+<span style="color: #6f42c1;"># Advanced usage with configuration options</span>
 
-<span style="color: #6f42c1;"># Advanced configuration</span>
-config = Config(
-    batch_size=<span style="color: #005cc5;">50</span>,
-    enable_templates=<span style="color: #005cc5;">True</span>,
-    convert_links=<span style="color: #005cc5;">True</span>,
-    preserve_history=<span style="color: #005cc5;">True</span>
-)
+<span style="color: #6f42c1;"># Use environment variables for credentials</span>
+export AZURE_DEVOPS_TOKEN="your_pat_token"
+export MEDIAWIKI_URL="https://your-wiki.com/api.php"
+export MEDIAWIKI_USERNAME="your_bot_username"
+export MEDIAWIKI_PASSWORD="your_bot_password"
 
-migrator = WikiMigrator(config=config)
-migrator.migrate_with_progress_callback(callback=my_progress_handler)
+<span style="color: #6f42c1;"># Run with batch processing and custom settings</span>
+python migration/azure_devops_migrator.py \
+    --wiki "YourWikiName" \
+    --batch-size 10 \
+    --output-dir "./migration_output" \
+    --log-level DEBUG
+
+<span style="color: #6f42c1;"># Use the interactive setup script</span>
+python getting_started.py
 </pre>
                                             </div>
                                         </div>
                                         <div id="code-custom" class="ant-tabs-tabpane" style="display: none;">
                                             <div style="background: #f6f8fa; padding: 16px; border-radius: 6px; font-family: monospace; font-size: 14px; margin: 16px 0;">
 <pre style="margin: 0; color: #24292e;">
-<span style="color: #d73a49;">from</span> azure_devops_migrator <span style="color: #d73a49;">import</span> CustomProcessor
+<span style="color: #6f42c1;"># Custom workflow examples</span>
 
-<span style="color: #d73a49;">class</span> <span style="color: #6f42c1;">MyCustomProcessor</span>(CustomProcessor):
-    <span style="color: #d73a49;">def</span> <span style="color: #6f42c1;">process_content</span>(self, content):
-        <span style="color: #6f42c1;"># Custom content transformation</span>
-        content = self.convert_custom_macros(content)
-        <span style="color: #d73a49;">return</span> super().process_content(content)
+<span style="color: #6f42c1;"># Create custom migration script</span>
+#!/bin/bash
+<span style="color: #6f42c1;"># migration_workflow.sh</span>
 
-<span style="color: #6f42c1;"># Use custom processor</span>
-migrator = WikiMigrator(processor=MyCustomProcessor())
+<span style="color: #6f42c1;"># Step 1: Run analysis</span>
+python migration/migration_planner.py --wiki "ProjectWiki" --output analysis.json
+
+<span style="color: #6f42c1;"># Step 2: Preview high-risk pages</span>
+python migration/content_previewer.py --complexity high --export preview.html
+
+<span style="color: #6f42c1;"># Step 3: Run migration in test mode first</span>
+python migration/azure_devops_migrator.py --wiki "ProjectWiki" --dry-run --log-file test.log
+
+<span style="color: #6f42c1;"># Step 4: Execute migration if test passes</span>
+if [ $? -eq 0 ]; then
+    python migration/azure_devops_migrator.py --wiki "ProjectWiki" --batch-size 5
+fi
 </pre>
                                             </div>
                                         </div>
@@ -1520,9 +1614,242 @@ migrator = WikiMigrator(processor=MyCustomProcessor())
                             </div>
                         </div>
 
+                        <div class="ant-alert ant-alert-info mt-24">
+                            <div class="ant-alert-message">🚀 Getting Started</div>
+                            <div>This toolkit provides the essential tools for Azure DevOps Wiki to MediaWiki migration. Start with the migration planner to analyse your content, then use the content previewer before running your migration. <a href="#" onclick="showSection('quick-start')">Follow the quick start guide</a> for step-by-step instructions.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Getting Started Script Documentation -->
+            <div id="getting-started-docs" class="content-section">
+                <div style="padding: 40px 0;">
+                    <div class="container">
+                        <h2 class="ant-typography">🚀 Getting Started Script</h2>
+                        <p class="text-secondary mb-32" style="font-size: 16px;">
+                            The interactive setup script that guides you through environment configuration and tool selection
+                        </p>
+
+                        <div class="ant-row">
+                            <div class="ant-col ant-col-xs-24 ant-col-lg-8">
+                                <div class="ant-card">
+                                    <div class="ant-card-head">📋 What It Does</div>
+                                    <div class="ant-card-body">
+                                        <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
+                                            <li><strong>Environment Detection:</strong> Automatically detects your OS, Python version, and shell</li>
+                                            <li><strong>Setup Configuration:</strong> Creates .toolkit_env file with optimised settings</li>
+                                            <li><strong>Interactive Menu:</strong> Provides guided access to all migration tools</li>
+                                            <li><strong>Dependency Checks:</strong> Verifies required packages and provides installation guidance</li>
+                                            <li><strong>Platform Optimisation:</strong> Adapts to Git Bash, PowerShell, macOS, and Linux environments</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="ant-col ant-col-xs-24 ant-col-lg-8">
+                                <div class="ant-card">
+                                    <div class="ant-card-head">🎯 Available Options</div>
+                                    <div class="ant-card-body">
+                                        <div class="space-vertical">
+                                            <div><strong>1. Azure DevOps Wiki Migration</strong><br><small class="text-secondary">Complete migration workflow setup</small></div>
+                                            <div><strong>2. Content Analysis & Planning</strong><br><small class="text-secondary">Run migration_planner.py with guidance</small></div>
+                                            <div><strong>3. Content Preview & Validation</strong><br><small class="text-secondary">Preview content conversion before migration</small></div>
+                                            <div><strong>4. Local MediaWiki Environment</strong><br><small class="text-secondary">Start Docker-based development environment</small></div>
+                                            <div><strong>5. View Documentation</strong><br><small class="text-secondary">Access toolkit documentation</small></div>
+                                            <div><strong>6. Help & Support</strong><br><small class="text-secondary">Troubleshooting and support information</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ant-col ant-col-xs-24 ant-col-lg-8">
+                                <div class="ant-card">
+                                    <div class="ant-card-head">💻 Usage Examples</div>
+                                    <div class="ant-card-body">
+                                        <div style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 12px 0; font-family: monospace; font-size: 12px;">
+                                            <div style="color: #6f42c1;"># Basic usage</div>
+                                            <div>python getting_started.py</div>
+                                        </div>
+                                        <div style="background: #f6f8fa; padding: 12px; border-radius: 6px; margin: 12px 0; font-family: monospace; font-size: 12px;">
+                                            <div style="color: #6f42c1;"># Test mode (safe to experiment)</div>
+                                            <div>python getting_started.py --test-mode</div>
+                                        </div>
+                                        <div class="ant-alert ant-alert-info mt-16" style="font-size: 12px;">
+                                            <div class="ant-alert-message">💡 Recommendation</div>
+                                            <div>Start here if you're new to the toolkit. The script will guide you through the entire setup process and help you choose the right tools for your migration needs.</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ant-divider"></div>
+
+                        <h3 class="ant-typography">🔧 Technical Details</h3>
+                        <div class="ant-row">
+                            <div class="ant-col ant-col-xs-24 ant-col-md-12">
+                                <div class="ant-card ant-card-small">
+                                    <div class="ant-card-head">🏗️ Environment Configuration</div>
+                                    <div class="ant-card-body">
+                                        <p class="text-secondary mb-16">Creates a .toolkit_env file with:</p>
+                                        <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
+                                            <li>Python executable path</li>
+                                            <li>Shell and OS detection</li>
+                                            <li>Docker Compose command preference</li>
+                                            <li>Git Bash compatibility settings</li>
+                                            <li>Toolkit directory paths</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ant-col ant-col-xs-24 ant-col-md-12">
+                                <div class="ant-card ant-card-small">
+                                    <div class="ant-card-head">🎛️ Platform Support</div>
+                                    <div class="ant-card-body">
+                                        <p class="text-secondary mb-16">Optimised for:</p>
+                                        <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
+                                            <li><strong>Windows:</strong> Git Bash, PowerShell, Command Prompt</li>
+                                            <li><strong>macOS:</strong> Terminal, iTerm2, Zsh, Bash</li>
+                                            <li><strong>Linux:</strong> All major distributions and shells</li>
+                                            <li><strong>Docker:</strong> Both Compose v1 and v2</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="ant-alert ant-alert-success mt-24">
-                            <div class="ant-alert-message">🎉 Success Stories</div>
-                            <div>Over <strong>50,000+ pages</strong> successfully migrated across <strong>100+ organizations</strong> using our toolbox. <a href="./testimonials.md" target="_blank">Read testimonials</a></div>
+                            <div class="ant-alert-message">🚀 Best Practice</div>
+                            <div>Always run <code>python getting_started.py</code> first when setting up the toolkit in a new environment. It will detect your system configuration and set up optimal defaults for your platform.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planned Features Section -->
+            <div id="planned-features" class="content-section">
+                <div style="padding: 40px 0;">
+                    <div class="container">
+                        <h2 class="ant-typography">🎯 Planned Features</h2>
+                        <p class="text-secondary mb-32" style="font-size: 16px;">
+                            Future enhancements and tools currently in development
+                        </p>
+
+                        <div class="ant-alert ant-alert-info mb-32">
+                            <div class="ant-alert-message">📋 Development Status</div>
+                            <div>This toolkit is actively developed. While core migration functionality is stable and tested, additional features are being added based on user feedback and common use cases. Check back regularly for updates.</div>
+                        </div>
+
+                        <div class="ant-row">
+                            <div class="ant-col ant-col-xs-24 ant-col-lg-8">
+                                <div class="ant-card">
+                                    <div class="ant-card-head">
+                                        🛠️ Utility Tools
+                                        <span class="ant-tag ant-tag-orange" style="float: right;">In Development</span>
+                                    </div>
+                                    <div class="ant-card-body">
+                                        <div class="space-vertical">
+                                            <div><strong>backup_manager.py</strong><br><small class="text-secondary">Automated backup and restore functionality for MediaWiki instances</small></div>
+                                            <div><strong>link_validator.py</strong><br><small class="text-secondary">Comprehensive link validation and automatic fixing</small></div>
+                                            <div><strong>cleanup_tool.py</strong><br><small class="text-secondary">Clean up temporary files, logs, and migration artifacts</small></div>
+                                            <div><strong>health_checker.py</strong><br><small class="text-secondary">System health monitoring and performance checks</small></div>
+                                        </div>
+                                        <div class="ant-progress mt-16">
+                                            <div class="ant-progress-line">
+                                                <div class="ant-progress-bg" style="width: 30%;"></div>
+                                            </div>
+                                            <span class="ant-progress-text">30%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ant-col ant-col-xs-24 ant-col-lg-8">
+                                <div class="ant-card">
+                                    <div class="ant-card-head">
+                                        📊 Analytics & Reporting
+                                        <span class="ant-tag ant-tag-orange" style="float: right;">Planned</span>
+                                    </div>
+                                    <div class="ant-card-body">
+                                        <div class="space-vertical">
+                                            <div><strong>migration_analytics.py</strong><br><small class="text-secondary">Detailed migration reports and success metrics</small></div>
+                                            <div><strong>content_analyzer.py</strong><br><small class="text-secondary">Deep content analysis and pattern recognition</small></div>
+                                            <div><strong>performance_monitor.py</strong><br><small class="text-secondary">Real-time migration performance monitoring</small></div>
+                                            <div><strong>quality_checker.py</strong><br><small class="text-secondary">Automated content quality assessment</small></div>
+                                        </div>
+                                        <div class="ant-progress mt-16">
+                                            <div class="ant-progress-line">
+                                                <div class="ant-progress-bg" style="width: 15%;"></div>
+                                            </div>
+                                            <span class="ant-progress-text">15%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ant-col ant-col-xs-24 ant-col-lg-8">
+                                <div class="ant-card">
+                                    <div class="ant-card-head">
+                                        🎨 Advanced Features
+                                        <span class="ant-tag ant-tag-blue" style="float: right;">Research</span>
+                                    </div>
+                                    <div class="ant-card-body">
+                                        <div class="space-vertical">
+                                            <div><strong>Template Engine v2</strong><br><small class="text-secondary">Advanced template conversion and management</small></div>
+                                            <div><strong>Automated Testing Suite</strong><br><small class="text-secondary">Comprehensive migration validation tests</small></div>
+                                            <div><strong>Web Dashboard</strong><br><small class="text-secondary">Browser-based migration management interface</small></div>
+                                            <div><strong>Multi-source Support</strong><br><small class="text-secondary">Support for Confluence, Notion, and other wikis</small></div>
+                                        </div>
+                                        <div class="ant-progress mt-16">
+                                            <div class="ant-progress-line">
+                                                <div class="ant-progress-bg" style="width: 5%;"></div>
+                                            </div>
+                                            <span class="ant-progress-text">5%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ant-divider"></div>
+
+                        <h3 class="ant-typography">📅 Development Roadmap</h3>
+                        <div class="ant-timeline">
+                            <div class="ant-timeline-item">
+                                <div class="ant-timeline-item-head" style="background: var(--success-color);"></div>
+                                <div class="ant-timeline-item-content">
+                                    <strong>Phase 1 - Core Stability</strong><br>
+                                    <div style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">✅ Complete validation_tool.py improvements<br>✅ Enhanced error handling and logging<br>✅ Documentation improvements</div>
+                                </div>
+                            </div>
+                            <div class="ant-timeline-item">
+                                <div class="ant-timeline-item-head" style="background: var(--warning-color);"></div>
+                                <div class="ant-timeline-item-content">
+                                    <strong>Next Phase - Utility Tools</strong><br>
+                                    <div style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">🚧 backup_manager.py development<br>🚧 link_validator.py implementation<br>🚧 Enhanced template management</div>
+                                </div>
+                            </div>
+                            <div class="ant-timeline-item">
+                                <div class="ant-timeline-item-head" style="background: var(--info-color);"></div>
+                                <div class="ant-timeline-item-content">
+                                    <strong>Future Enhancement - Analytics & Reporting</strong><br>
+                                    <div style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">📋 migration_analytics.py<br>📊 Performance monitoring tools<br>📈 Quality assessment framework</div>
+                                </div>
+                            </div>
+                            <div class="ant-timeline-item">
+                                <div class="ant-timeline-item-head" style="background: var(--primary-color);"></div>
+                                <div class="ant-timeline-item-content">
+                                    <strong>Under Consideration - Advanced Features</strong><br>
+                                    <div style="color: var(--text-secondary); font-size: 14px; margin-top: 4px;">🌐 Web dashboard prototype<br>🔄 Multi-source support research<br>🧪 Automated testing framework</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ant-alert ant-alert-warning mt-24">
+                            <div class="ant-alert-message">🤝 Community Input Welcome</div>
+                            <div>Development priorities are influenced by community feedback. If you have specific needs or feature requests, please <a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools/issues" target="_blank">create an issue on GitHub</a> or <a href="https://github.com/development-toolbox/development-toolbox-mediawiki-tools/discussions" target="_blank">start a discussion</a>.</div>
                         </div>
                     </div>
                 </div>
@@ -1663,6 +1990,35 @@ migrator = WikiMigrator(processor=MyCustomProcessor())
                 setTheme('dark');
             }
         });
+
+        // Code sample tabs functionality
+        function showCodeSample(tabId) {
+            // Hide all tab panes
+            const panes = document.querySelectorAll('.ant-tabs-tabpane');
+            panes.forEach(pane => {
+                pane.style.display = 'none';
+                pane.classList.remove('ant-tabs-tabpane-active');
+            });
+
+            // Show the selected tab pane
+            const activePane = document.getElementById('code-' + tabId);
+            if (activePane) {
+                activePane.style.display = 'block';
+                activePane.classList.add('ant-tabs-tabpane-active');
+            }
+
+            // Update tab appearance
+            const tabs = document.querySelectorAll('.ant-tabs-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('ant-tabs-tab-active');
+            });
+
+            // Find and activate the clicked tab
+            const clickedTab = document.querySelector(`[onclick="showCodeSample('${tabId}')"]`);
+            if (clickedTab) {
+                clickedTab.classList.add('ant-tabs-tab-active');
+            }
+        }
     </script>
 </body>
 </html>

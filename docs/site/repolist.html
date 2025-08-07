@@ -52,13 +52,14 @@ body {
     position: fixed;
     top: 20px;
     right: 24px;
-    z-index: 1000;
+    z-index: 1002;
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 20px;
     padding: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     transition: all 0.3s;
+    pointer-events: auto;
 }
 
 .theme-toggle:hover {
@@ -84,6 +85,21 @@ body {
 .theme-toggle button.active {
     background: var(--primary-color);
     color: white;
+}
+
+/* Fix dark mode theme toggle button visibility */
+body.dark .theme-toggle {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+}
+
+body.dark .theme-toggle button {
+    color: var(--text-secondary);
+}
+
+body.dark .theme-toggle button:hover {
+    background: var(--bg-light);
+    color: var(--text-primary);
 }
 
 /* Back to Top and Home buttons */
@@ -131,7 +147,13 @@ body {
 .header-content { 
     max-width: 1200px; 
     margin: 0 auto; 
-    padding: 0 24px; 
+    padding: 0 140px 0 24px; 
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        padding: 0 100px 0 24px;
+    }
 }
 .header h1 { 
     margin: 0; 
@@ -267,15 +289,6 @@ body {
 <div class="container">
 <div class="repo-grid">
 
-<div class="repo-card">
-  <h2><a href="https://github.com/development-toolbox/.github">.github</a></h2>
-  <p>Central repository containing organisation-wide configurations, documentation standards, and contribution guidelines for the Development Toolbox ecosystem. Includes reusable workflows, issue templates, and community health files.</p>
-  <pre>git clone https://github.com/development-toolbox/.github.git</pre>
-  <div class="repo-tags">
-    <span class="tag tag-github">GitHub</span>
-    <span class="tag tag-cli">Configuration</span>
-  </div>
-</div>
 
 <div class="repo-card">
   <h2><a href="https://github.com/development-toolbox/development-toolbox-compose-file-generator">Compose File Generator</a></h2>
